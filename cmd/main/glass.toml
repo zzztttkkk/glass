@@ -1,0 +1,11 @@
+[http]
+port = 8079
+
+[database]
+writeable-uri = "root:123456@/glass"
+
+[redis]
+mode = "singleton"
+nodes = ["redis://127.0.0.1:6379"]
+
+
