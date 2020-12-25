@@ -1,10 +1,18 @@
-import React from "react";
+// @flow
+
+import * as React from "react";
 
 import {Route, Switch} from "react-router-dom";
 
 
 export class PathSwitch {
-    constructor(prefix, notfound) {
+    prefix : string;
+    parent : ?PathSwitch;
+    m : {string: PathSwitch};
+    children : Array<PathSwitch>;
+    notfound: (any)=>React.Node;
+
+    constructor(prefix: string, notfound: (any)=>React.Node) {
         this.prefix = prefix;
         this.parent = null;
         this.m = {};
@@ -13,28 +21,28 @@ export class PathSwitch {
         this.notfound = notfound;
     }
 
-    register(path, val) {
+    register(path: string, val: PathSwitch) {
         if (typeof this.m[path] != "undefined") {
             throw path;
         }
         this.m[path] = val;
     }
 
-    include(ps) {
+    include(ps: PathSwitch) {
         ps.parent = this;
         this.children.push(ps);
     }
 
-    full() {
-        if (this.parent !== null) {
+    full(): string {
+        if (this.parent) {
             return this.parent.full() + this.prefix;
         }
         return this.prefix;
     }
 
-    render() {
+    render(): React.Node {
         let l = this.children.length;
-        return <Switch key={this.index}>
+        return <Switch>
             {
                 this.children.map(
                     (item, index) => {
