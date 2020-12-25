@@ -1,15 +1,15 @@
 import utils from "../utils";
-import register from "./register";
-import login from "./login"
-import profile from "./profile"
+import {RegisterPage} from "./register";
+import {LoginPage} from "./login"
+import {ProfilePage} from "./profile"
 
 export const Account = new utils.PathSwitch("/account", function () {
     return <h1>account not found</h1>
 });
 
-Account.register("/register", register.Page);
+Account.register("/register", RegisterPage);
 
-Account.register("/login", login.Page);
+Account.register("/login", LoginPage);
 
-Account.register("/profile/:name", profile.Page)
+Account.register("/profile/:name", ProfilePage)
 

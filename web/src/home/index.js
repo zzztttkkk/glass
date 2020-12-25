@@ -1,5 +1,3 @@
-import {Page} from "./page";
+import {Home} from "./page";
 
-export default {
-    Page
-}
+export const HomePage = Home

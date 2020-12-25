@@ -38,9 +38,9 @@ export class PathSwitch {
             {
                 this.children.map(
                     (item, index) => {
-                        return <Route
-                            key={index}
-                            path={item.prefix}>{item.render()}</Route>
+                        return <Route key={index} path={item.prefix}>
+                            {item.render()}
+                        </Route>
                     }
                 )
             }

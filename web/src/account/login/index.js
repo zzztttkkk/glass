@@ -1,5 +1,3 @@
-import {Page} from "./page";
+import {Login} from "./page";
 
-export default {
-    Page
-}
+export const LoginPage = Login;

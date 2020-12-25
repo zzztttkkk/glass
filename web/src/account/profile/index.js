@@ -1,5 +1,3 @@
-import {Page} from "./page"
+import {Profile} from "./page"
 
-export default {
-    Page
-}
+export const ProfilePage = Profile;

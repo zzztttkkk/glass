@@ -1,13 +1,13 @@
 import {Account} from "./account"
 import {BrowserRouter as Router, Link} from "react-router-dom";
 import utils from "./utils"
-import home from "./home"
+import {HomePage} from "./home"
 
 const Root = new utils.PathSwitch("", function () {
     return <h1>Not found!</h1>
 });
 
-Root.register("/", home.Page);
+Root.register("/", HomePage);
 Root.include(Account);
 
 function App() {

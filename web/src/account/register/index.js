@@ -1,5 +1,3 @@
-import {Page} from "./page";
+import {Register} from "./page";
 
-export default {
-    Page
-}
+export const RegisterPage = Register;
