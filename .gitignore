@@ -1,6 +1,6 @@
-/.vscode
-/.vs
-/.idea
+**/.vscode
+**/.vs
+**/.idea
 go.sum
 *.exe
 **/node_modules
