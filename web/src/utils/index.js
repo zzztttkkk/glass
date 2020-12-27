@@ -1,6 +1,7 @@
 import {PathSwitch} from "./router"
 import {Cookie} from "./cookie";
 import {glass} from "./glass";
+import {Override} from "./overrides";
 
 global.glass = glass;
 
@@ -16,4 +17,5 @@ export default {
     },
     glass,
     Cookie,
+    Override,
 }

@@ -14,16 +14,12 @@ import (
 
 var secret []byte
 var authMaxAge int64
-var authCookieName string
-var authHeaderName string
 
 func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
 			secret = []byte(cfg.Secret)
 			authMaxAge = int64(cfg.AuthMaxAge)
-			authCookieName = cfg.HTTP.AuthCookieName
-			authHeaderName = cfg.HTTP.AuthHeaderName
 		},
 	)
 }
@@ -66,28 +62,6 @@ func parseToken(ctx context.Context, v []byte) (auth.Subject, error) {
 	return user, nil
 }
 
-func (Namespace) Auth(ctx context.Context) (auth.Subject, error) {
-	rctx := sha.RCtx(ctx)
-	req := &rctx.Request
-
-	var token []byte
-
-	// http basic authorization
-	authorization, _ := req.Header.Get(sha.HeaderAuthorization)
-	if len(authorization) > 7 {
-		return parseToken(ctx, authorization[7:])
-	}
-
-	// header
-	if len(token) < 1 && len(authHeaderName) > 0 {
-		token, _ = req.Header.Get(authHeaderName)
-		return parseToken(ctx, token)
-	}
-
-	// cookie
-	if len(token) < 1 && len(authHeaderName) > 0 {
-		token, _ = req.Cookie(authCookieName)
-		return parseToken(ctx, token)
-	}
-	return nil, sha.StatusError(sha.StatusUnauthorized)
+func (Namespace) Auth(ctx context.Context, token string) (auth.Subject, error) {
+	return parseToken(ctx, utils.B(token))
 }

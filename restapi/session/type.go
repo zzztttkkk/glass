@@ -22,11 +22,11 @@ var maxAgeSeconds int64
 var maxAgeSecondsStr []byte
 var prefix string
 
-const clearScript = `redis.call('DEL', KEYS[1])
-redis.call('HSET', KEYS[1], '.created', ARGV[1])
-redis.call('EXPIRE', KEYS[1], ARGV[2])`
+const resetScript = `redis.call('DEL', ARGV[1])
+redis.call('HSET', ARGV[1], '.created', ARGV[2])
+redis.call('EXPIRE', ARGV[1], ARGV[3])`
 
-var clearScriptSha1 string
+var resetScriptHash string
 
 func init() {
 	internal.DigContainer.Append(
@@ -40,7 +40,7 @@ func init() {
 			maxAgeSecondsStr = utils.B(strconv.FormatInt(maxAgeSeconds, 10))
 			prefix = cfg.HTTP.Session.StorageKeyPrefix
 			var err error
-			clearScriptSha1, err = cli.ScriptLoad(context.Background(), clearScript).Result()
+			resetScriptHash, err = cli.ScriptLoad(context.Background(), resetScript).Result()
 			if err != nil {
 				panic(err)
 			}
@@ -84,13 +84,18 @@ func New(ctx *sha.RequestCtx) Type {
 		}
 	}
 
-	key = prefix + xid.New().String()
-	cli.EvalSha(c, clearScriptSha1, []string{key}, time.Now().Unix(), maxAge)
+	sid = utils.B(xid.New().String())
+	key = prefix + utils.S(sid)
+	if err := cli.EvalSha(c, resetScriptHash, nil, key, time.Now().Unix(), maxAgeSeconds).Err(); err != nil {
+		if err != redis.Nil {
+			panic(err)
+		}
+	}
 
 	if byCookie {
-		ctx.Response.SetCookie(cookieName, key, sha.CookieOptions{MaxAge: maxAgeSeconds})
+		ctx.Response.SetCookie(cookieName, utils.S(sid), nil)
 	} else {
-		ctx.Response.Header.Set(headerName, utils.B(key))
+		ctx.Response.Header.Set(headerName, sid)
 		ctx.Response.Header.Set(headerExpireName, maxAgeSecondsStr)
 	}
 	ctx.Set(sessionKey, Type(key))
@@ -121,5 +126,5 @@ func (s Type) Del(ctx context.Context, keys ...string) { cli.HDel(ctx, string(s)
 func (s Type) Refresh(ctx context.Context) { cli.Expire(ctx, string(s), maxAge) }
 
 func (s Type) Clear(ctx context.Context) {
-	cli.EvalSha(ctx, clearScriptSha1, []string{string(s)}, time.Now().Unix(), maxAge)
+	cli.EvalSha(ctx, resetScriptHash, nil, string(s), time.Now().Unix(), maxAgeSeconds)
 }

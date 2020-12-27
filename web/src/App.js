@@ -5,8 +5,9 @@ import utils from "./utils";
 import {HomePage} from "./home";
 import {Client as Styletron} from "styletron-engine-atomic";
 import {Provider as StyletronProvider} from "styletron-react";
-import {LightTheme, BaseProvider, LocaleProvider} from "baseui";
+import {LightTheme, BaseProvider, LocaleProvider, useStyletron} from "baseui";
 import comps from "./comps"
+
 
 const Root = new utils.PathSwitch("", function () {
     return <h1>NotFound</h1>;
@@ -17,30 +18,62 @@ Root.include(Account);
 
 const engine = new Styletron();
 
-function Inner() {
-    const [theme, setTheme] = React.useState(LightTheme);
-    utils.glass.setTheme = setTheme;
+function makeResponsiveTheme(theme) {
+    const breakpoints = {
+        small: 769,
+        medium: 1024,
+        large: 1216,
+    };
+    const ResponsiveTheme = Object.keys(breakpoints).reduce(
+        (acc, key) => {
+            acc.mediaQuery[
+                key
+                ] = `@media screen and (min-width: ${breakpoints[key]}px)`;
+            return acc;
+        },
+        {
+            breakpoints,
+            mediaQuery: {},
+        },
+    );
+    return {...theme, ...ResponsiveTheme};
+}
 
+function GlassOverrideSetup(props) {
+    const [css, theme] = useStyletron();
+    utils.glass.css = css;
+    utils.glass.theme = theme;
+
+    return <>{props.children}</>
+}
+
+function Inner() {
+    const [theme, setTheme] = React.useState(makeResponsiveTheme(LightTheme));
+    utils.glass.setTheme = function (v) {
+        setTheme(makeResponsiveTheme(v));
+    };
     return <StyletronProvider value={engine}>
         <BaseProvider theme={theme}>
-            <Router>
-                {Root.render()}
-                {
-                    [
-                        "/account/login",
-                        "/account/register",
-                        "/account/profile/zzztttkkk",
-                        "/"
-                    ].map((item, index) => {
-                        let Link = comps.Link;
-                        return (
-                            <div key={index}>
-                                <Link href={item}>{item === "/" ? "Home" : item}</Link>
-                            </div>
-                        );
-                    })
-                }
-            </Router>
+            <GlassOverrideSetup>
+                <Router>
+                    {Root.render()}
+                    {
+                        [
+                            "/account/login",
+                            "/account/register",
+                            "/account/profile/zzztttkkk",
+                            "/"
+                        ].map((item, index) => {
+                            let Link = comps.Link;
+                            return (
+                                <div key={index}>
+                                    <Link href={item}>{item === "/" ? "Home" : item}</Link>
+                                </div>
+                            );
+                        })
+                    }
+                </Router>
+            </GlassOverrideSetup>
         </BaseProvider>
     </StyletronProvider>
 }

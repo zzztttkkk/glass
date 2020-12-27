@@ -51,8 +51,9 @@ type Type struct {
 			CaptchaFonts []string `json:"captcha_fonts" toml:"captcha-fonts"`
 		} `json:"session" toml:"session"`
 
-		AuthCookieName string `json:"auth_cookie_name" toml:"auth-cookie-name"`
-		AuthHeaderName string `json:"auth_header_name" toml:"auth-header-name"`
+		AuthCookieName  string `json:"auth_cookie_name" toml:"auth-cookie-name"`
+		AuthHeaderName  string `json:"auth_header_name" toml:"auth-header-name"`
+		AuthTokenMaxAge int64  `json:"auth_token_max_age" toml:"auth"`
 	} `json:"http" toml:"http"`
 
 	Database struct {
