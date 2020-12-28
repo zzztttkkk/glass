@@ -32,12 +32,19 @@ export function Header(props) {
     >
         <HeaderNavigation overrides={{Root: {style: {borderBottomWidth: 0,}}}}>
             <StyledNavigationList $align={ALIGN.left}>
-                <StyledNavigationItem><Link href={"/"}>Glass</Link></StyledNavigationItem>
+                <StyledNavigationItem>
+                    <Link
+                        href={"/"}
+                        overrides={{Root: {style: {textDecoration: "none"}}}}
+                    >
+                        <h1>Glass</h1>
+                    </Link>
+                </StyledNavigationItem>
             </StyledNavigationList>
             <StyledNavigationList $align={ALIGN.center}/>
             <StyledNavigationList $align={ALIGN.right}>
                 <StyledNavigationItem><Link href={"/link1"}>Link1</Link></StyledNavigationItem>
-                <StyledNavigationItem><Link href={"/link2"}>Link2</Link></StyledNavigationItem>
+                <StyledNavigationItem><Link href={"/editor"}>Editor</Link></StyledNavigationItem>
             </StyledNavigationList>
             <StyledNavigationList $align={ALIGN.right}>
                 <StyledNavigationItem>

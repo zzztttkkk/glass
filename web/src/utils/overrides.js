@@ -1,4 +1,7 @@
+// @flow
+
 import {glass} from "./glass";
+import {StyleObject} from "styletron-standard";
 
 function getOverrideData(props, position, type) {
     let od = props["overrides"];
@@ -9,7 +12,7 @@ function getOverrideData(props, position, type) {
 }
 
 export class Override {
-    static Style(props, position, dist) {
+    static Style(props, position: string, dist: StyleObject) {
         let style = getOverrideData(props, position, "style");
         if (!style) {
             return glass.css(dist);

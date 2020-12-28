@@ -9,6 +9,43 @@ export const glass = {
         return ""
     },
     theme: {},
+    Editor: {
+        quill: null,
+        getContents: function () {
+            return this.quill.getContents();
+        },
+        setContents: function (c) {
+            this.quill.setContents(c);
+        },
+        getText: function () {
+            return this.quill.getText()
+        },
+        getTitle: function () {
+        },
+        setTitle: function () {
+        },
+        save: function () {
+            window.localStorage.setItem("editor::content", JSON.stringify(this.getContents()));
+            window.localStorage.setItem("editor::title", this.getTitle());
+        },
+        load: function () {
+            let v = window.localStorage.getItem("editor::content");
+            if (v) {
+                try {
+                    this.setContents(JSON.parse(v));
+                } catch (e) {
+                    window.localStorage.removeItem("editor");
+                }
+            }
+            v = window.localStorage.getItem("editor::title");
+            if (v) {
+                this.setTitle(v);
+            }
+        },
+        on: function (v, f) {
+            return this.quill.on(v, f)
+        }
+    },
 
     TryGetUser: async function () {
         if (user) {

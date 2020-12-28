@@ -6,7 +6,7 @@ export function Wrapper(props) {
         className={utils.Override.Style(
             props, "Root", {width: "100%", position: "relative"}
         )}
-        {...utils.Override.Props(props, "Root", null)}
+        {...utils.Override.Props(props, "Root", {})}
     >
         <div
             className={
@@ -14,7 +14,7 @@ export function Wrapper(props) {
                     props, "Content", {maxWidth: "1600px", margin: "0 auto"}
                 )
             }
-            {...utils.Override.Props(props, "Content", null)}
+            {...utils.Override.Props(props, "Content", {})}
         >
             {props.children}
         </div>

@@ -6,14 +6,14 @@ import {HomePage} from "./home";
 import {Client as Styletron} from "styletron-engine-atomic";
 import {Provider as StyletronProvider} from "styletron-react";
 import {LightTheme, BaseProvider, LocaleProvider, useStyletron} from "baseui";
-import comps from "./comps"
-
+import {EditorPage} from "./editor";
 
 const Root = new utils.PathSwitch("", function () {
     return <h1>NotFound</h1>;
 });
 
 Root.register("/", HomePage);
+Root.register("/editor", EditorPage);
 Root.include(Account);
 
 const engine = new Styletron();
@@ -57,21 +57,6 @@ function Inner() {
             <GlassOverrideSetup>
                 <Router>
                     {Root.render()}
-                    {
-                        [
-                            "/account/login",
-                            "/account/register",
-                            "/account/profile/zzztttkkk",
-                            "/"
-                        ].map((item, index) => {
-                            let Link = comps.Link;
-                            return (
-                                <div key={index}>
-                                    <Link href={item}>{item === "/" ? "Home" : item}</Link>
-                                </div>
-                            );
-                        })
-                    }
                 </Router>
             </GlassOverrideSetup>
         </BaseProvider>
