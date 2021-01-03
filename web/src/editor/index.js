@@ -99,8 +99,7 @@ function Editor() {
     return <>
         <Wrapper>
             <div className={css({marginBottom: "16px", display: "flex"})}>
-                <Input clearable required
-                       overrides={{Input: {style: {fontSize: "2em"}}}}
+                <Input overrides={{Input: {style: {fontSize: "2em"}}}}
                        placeholder={"Title"}
                        value={title}
                        onChange={event => {
@@ -116,15 +115,14 @@ function Editor() {
             <div id={"editor"}/>
         </Wrapper>
         {
-            !showSubmitDialog ?
-                null :
-                <div>Dialog</div>
+            showSubmitDialog &&
+            <div>Dialog</div>
         }
     </>
 }
 
 export function EditorPage() {
-    return <Page>
+    return <Page title={" Editor"}>
         <Editor/>
     </Page>
 }

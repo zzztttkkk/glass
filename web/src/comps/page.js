@@ -19,7 +19,7 @@ export function Page(props) {
     )
 
     return <div id="page">
-        <Header user={user}/>
+        <Header user={user} title={props.title}/>
         {props.children}
     </div>
 }

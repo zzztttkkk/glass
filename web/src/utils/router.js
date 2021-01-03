@@ -1,10 +1,16 @@
-import * as React from "react";
+import React from "react";
 
 import {Route, Switch} from "react-router-dom";
 
 
-export class PathSwitch {
+function isLazyObject(obj) {
+    return obj.$$typeof && typeof obj.$$typeof === "symbol" && obj.$$typeof.toString() === "Symbol(react.lazy)"
+}
+
+
+export class PathSwitch extends React.Component {
     constructor(prefix, notfound) {
+        super();
         this.prefix = prefix;
         this.parent = null;
         this.m = {};
@@ -14,6 +20,11 @@ export class PathSwitch {
     }
 
     register(path, val) {
+        if (isLazyObject(val)) {
+            // todo support lazy
+            throw new Error("todo lazy");
+        }
+
         if (typeof this.m[path] != "undefined") {
             throw path;
         }
@@ -38,9 +49,7 @@ export class PathSwitch {
             {
                 this.children.map(
                     (item, index) => {
-                        return <Route key={index} path={item.prefix}>
-                            {item.render()}
-                        </Route>
+                        return <Route key={index} path={item.prefix}>{item.render()}</Route>
                     }
                 )
             }
@@ -52,7 +61,7 @@ export class PathSwitch {
                 )
             }
             {
-                this.notfound != null ? <Route component={this.notfound}/> : null
+                this.notfound != null && <Route component={this.notfound}/>
             }
         </Switch>
     }

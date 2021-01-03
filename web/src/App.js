@@ -1,22 +1,29 @@
 import React from "react";
-import {Account} from "./account";
 import {BrowserRouter as Router} from "react-router-dom";
-import utils from "./utils";
-import {HomePage} from "./home";
 import {Client as Styletron} from "styletron-engine-atomic";
 import {Provider as StyletronProvider} from "styletron-react";
 import {LightTheme, BaseProvider, LocaleProvider, useStyletron} from "baseui";
+import utils from "./utils";
+
+
+// pages
+import {HomePage} from "./home";
+import {Account as AccountPages} from "./account";
 import {EditorPage} from "./editor";
 
-const Root = new utils.PathSwitch("", function () {
-    return <h1>NotFound</h1>;
-});
+
+const Root = new utils.PathSwitch(
+    "",
+    function () {
+        return <h1>NotFound</h1>;
+    }
+);
 
 Root.register("/", HomePage);
 Root.register("/editor", EditorPage);
-Root.include(Account);
+Root.include(AccountPages);
 
-const engine = new Styletron();
+const styletron = new Styletron();
 
 function makeResponsiveTheme(theme) {
     const breakpoints = {
@@ -43,7 +50,6 @@ function GlassOverrideSetup(props) {
     const [css, theme] = useStyletron();
     utils.glass.css = css;
     utils.glass.theme = theme;
-
     return <>{props.children}</>
 }
 
@@ -52,12 +58,10 @@ function Inner() {
     utils.glass.setTheme = function (v) {
         setTheme(makeResponsiveTheme(v));
     };
-    return <StyletronProvider value={engine}>
+    return <StyletronProvider value={styletron}>
         <BaseProvider theme={theme}>
             <GlassOverrideSetup>
-                <Router>
-                    {Root.render()}
-                </Router>
+                <Router>{Root.render()}</Router>
             </GlassOverrideSetup>
         </BaseProvider>
     </StyletronProvider>

@@ -1,7 +1,7 @@
 export class User {
-    constructor() {
-        this.name = "unknown";
-        this.avatar = "";
-        this.alias = "";
+    constructor(name, avatar, alias) {
+        this.name = name || "unknown";
+        this.avatar = avatar || "";
+        this.alias = alias || "";
     }
 }

@@ -1,6 +1,7 @@
 import {Cookie} from "./cookie";
+import {User} from "./user";
 
-let user = undefined;
+let user = new User("ztk");
 
 export const glass = {
     setTheme: null,
