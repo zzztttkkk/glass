@@ -13,4 +13,4 @@ require (
 	github.com/zzztttkkk/sha v0.0.2
 )
 
-replace github.com/zzztttkkk/sha v0.0.2 => ../sha
+replace github.com/zzztttkkk/sha v0.0.2 => ../../sha
