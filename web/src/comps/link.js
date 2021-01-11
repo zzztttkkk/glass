@@ -19,6 +19,7 @@ export function Link(props) {
 }
 
 export function BtnLink(props) {
+    console.log(props);
     const [css] = useStyletron();
     return <Button className={css(props.btnStyle || {})}>
         <Link {...props} overrides={{Root: {style: props.linkStyle || {}}}}/>

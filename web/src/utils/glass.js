@@ -1,16 +1,28 @@
 import {Cookie} from "./cookie";
 import {User} from "./user";
+import {toaster} from "baseui/toast";
+import {glass as lg} from "../languages/glass";
 
 let user = new User("ztk");
 
 export const glass = {
 	isMobile: false,
 	setTheme: null,
+	locate: {glass: lg},
 	setLocate: null,
 	css: (v) => {
 		return ""
 	},
 	theme: {},
+	toaster: {
+		toaster,
+		autoClose: function (msg, timeout, level = "info") {
+			let key = this.toaster[level](msg);
+			window.setTimeout((() => this.toaster.clear(key)), timeout)
+		}
+	},
+	setTitle: function (t) {
+	},
 	Editor: {
 		quill: null,
 		__title: "",
@@ -31,6 +43,7 @@ export const glass = {
 		save: function () {
 			window.localStorage.setItem("editor::content", JSON.stringify(this.getContents()));
 			window.localStorage.setItem("editor::title", this.getTitle());
+			glass.toaster.autoClose(glass.locate.glass.common.saved, 500, "positive");
 		},
 		load: function () {
 			let v = window.localStorage.getItem("editor::content");

@@ -8,6 +8,11 @@ export class Fragment {
 		return this;
 	}
 
+	appendElements(eles) {
+		eles.forEach((item => this.appendElement(item)));
+		return this;
+	}
+
 	appendCSS(href) {
 		let link = document.createElement("link");
 		link.setAttribute("href", href);

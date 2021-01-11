@@ -1,3 +1,7 @@
 .ql-editor {
     min-height: 50vh;
 }
+
+.editor-custom-btn {
+    font-size: 13px;
+}

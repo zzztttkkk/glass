@@ -12,6 +12,7 @@ import {Avatar} from "baseui/avatar";
 import {useStyletron} from "baseui";
 import {StatefulPopover, TRIGGER_TYPE, PLACEMENT} from 'baseui/popover';
 import {Link, BtnLink} from "./link";
+import utils from "../utils";
 
 function User(props) {
 	let user = props.user;
@@ -30,11 +31,7 @@ function User(props) {
 		triggerType={TRIGGER_TYPE.click}
 		placement={PLACEMENT.bottom}
 		content={
-			<div
-				className={
-					css({padding: "8px"})
-				}
-			>
+			<div className={css({padding: "8px"})}>
 				<BtnLink
 					href={`/account/profile/${user.name}`}
 					btnStyle={btnStyle}
@@ -46,7 +43,7 @@ function User(props) {
 					btnStyle={
 						{
 							...btnStyle,
-							...{marginTop: "8px",}
+							...{marginTop: "8px!important",}
 						}
 					}
 					linkStyle={linkStyle}
@@ -58,7 +55,7 @@ function User(props) {
 						{
 							...btnStyle,
 							...{
-								marginTop: "8px",
+								marginTop: "8px!important",
 								backgroundColor: theme.colors.negative,
 								":hover": {
 									backgroundColor: theme.colors.negative500
@@ -71,9 +68,7 @@ function User(props) {
 			</div>
 		}
 	>
-		<div
-			className={css({cursor: "pointer"})}
-		>
+		<div className={css({cursor: "pointer"})}>
 			<Avatar name={user.name} src={user.avatar} size={"scale1200"}/>
 		</div>
 	</StatefulPopover>
@@ -81,20 +76,18 @@ function User(props) {
 
 export function Header(props) {
 	const [css] = useStyletron();
+	const [title, setTitle] = React.useState(props.title || "");
+	utils.glass.setTitle = setTitle;
 
 	React.useEffect(
 		() => {
-			let v = props.title || "";
-			if (v.length < 1) {
-				return;
-			}
-			if (v.startsWith(" ")) {
-				document.title = document.title + v;
+			if (title.startsWith(" ")) {
+				document.title = document.title + title;
 			} else {
-				document.title = v;
+				document.title = title;
 			}
 		},
-		[props.title]
+		[title]
 	)
 
 	return <Wrapper

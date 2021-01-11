@@ -8,7 +8,7 @@ import {useStyletron} from "baseui";
 import {Button} from "baseui/button";
 import utils from "../utils"
 
-function newQuill(Q, setContentSize) {
+function newQuill(Q, onChange) {
 	glass.Editor.quill = new Q(
 		"#editor",
 		{
@@ -16,7 +16,7 @@ function newQuill(Q, setContentSize) {
 			modules: {
 				toolbar: [
 					[{'font': []}, {'size': []}],
-					['bold', 'italic', 'underline', 'strike'],
+					[{'header': [1, 2, 3, 4, 5, 6, false]}, 'bold', 'italic', 'underline', 'strike'],
 					[{'color': []}, {'background': []}],
 					[{'script': 'super'}, {'script': 'sub'}],
 					['link', 'blockquote', 'code-block', 'formula'],
@@ -33,14 +33,9 @@ function newQuill(Q, setContentSize) {
 		},
 	);
 
-
 	glass.Editor.load();
-	setContentSize(glass.Editor.getText().length);
-	glass.Editor.on(
-		"text-change", function () {
-			setContentSize(glass.Editor.getText().length);
-		}
-	);
+	onChange();
+	glass.Editor.on("text-change", onChange);
 
 	let interval = window.setInterval(
 		() => {
@@ -48,26 +43,53 @@ function newQuill(Q, setContentSize) {
 			if (!toolbarContainer) return;
 			window.clearInterval(interval);
 
-			new utils.Fragment().appendElement(
-				// undo
-				function () {
-					return document.createElement("button")
-				}(),
-				// redo
-				function () {
-					return document.createElement("button")
-				}(),
-				// save
-				function () {
-					return document.createElement("button")
-				}(),
-				// close input method
-				function () {
-					return document.createElement("button")
-				}(),
-			);
+			let span = document.createElement("span");
+			span.setAttribute("class", "ql-formats");
+
+			function newBtn(name) {
+				let fn;
+				switch (name) {
+					case "undo": {
+						fn = (evt => glass.Editor.quill.history.undo())
+						break;
+					}
+					case "redo": {
+						fn = (evt => glass.Editor.quill.history.redo())
+						break;
+					}
+					case "save": {
+						fn = (evt => glass.Editor.save())
+						break;
+					}
+					case "keyboard": {
+						fn = (evt => document.querySelector("#editor .ql-editor").blur())
+						break;
+					}
+					default: {
+						fn = (evt => console.log(name))
+					}
+				}
+
+				let btn = document.createElement("button");
+				btn.setAttribute("type", "button");
+				btn.setAttribute("class", `ql-${name}`);
+				btn.innerHTML = `<i class="fa fas fa-${name} editor-custom-btn"></i>`
+				btn.addEventListener("click", fn);
+				return btn;
+			}
+
+			new utils.Fragment().appendElements(
+				[
+					newBtn("undo"),
+					newBtn("redo"),
+					newBtn("save"),
+					utils.glass.isMobile ? newBtn("keyboard") : null
+				].filter((item => item))
+			).insertInto(span);
+
+			toolbarContainer.appendChild(span);
 		},
-		20
+		100
 	);
 }
 
@@ -86,38 +108,40 @@ function Editor() {
 
 	React.useEffect(
 		() => {
-			window.onload = function () {
-				new utils.Fragment().appendCSS(
-					"https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css"
-				).appendCSS(
-					"https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
-				).appendJavaScript(
-					"https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
-				).appendJavaScript(
-					"https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"
-				).insertInto(document.head);
+			new utils.Fragment().appendCSS(
+				"https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css"
+			).appendCSS(
+				"https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+			).appendJavaScript(
+				"https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+			).appendJavaScript(
+				"https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"
+			).insertInto(document.head);
 
-				let interval = window.setInterval(
-					() => {
-						let Q = window["Quill"];
-						if (!Q) return;
-						window.clearInterval(interval);
-						newQuill(Q, setContentSize);
-					},
-					20,
-				);
-
-				window.addEventListener(
-					"keydown",
-					function (evt) {
-						if (evt.key === "s" && evt.ctrlKey) {
-							evt.preventDefault();
-							glass.Editor.save();
+			let interval = window.setInterval(
+				() => {
+					let Q = window["Quill"];
+					if (!Q) return;
+					window.clearInterval(interval);
+					newQuill(
+						Q,
+						function () {
+							setContentSize(glass.Editor.getText().length);
 						}
-					}
-				)
-			};
+					);
+				},
+				20,
+			);
 
+			window.addEventListener(
+				"keydown",
+				function (evt) {
+					if (evt.key === "s" && evt.ctrlKey) {
+						evt.preventDefault();
+						glass.Editor.save();
+					}
+				}
+			)
 		},
 		[]
 	);
