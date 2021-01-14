@@ -6,8 +6,13 @@ import (
 )
 
 type Type struct {
-	Secret     string `json:"secret" toml:"secret"`
-	AuthMaxAge int    `json:"auth_max_age" toml:"auth-max-age"`
+	Secret string `json:"secret" toml:"secret"`
+
+	Auth struct {
+		CookieName  string `json:"cookie_name" toml:"cookie-name"`
+		HeaderName  string `json:"header_name" toml:"header-name"`
+		TokenMaxAge int    `json:"token_max_age" toml:"max-age"`
+	} `json:"auth" toml:"auth"`
 
 	HTTP struct {
 		// server
@@ -50,13 +55,10 @@ type Type struct {
 
 			CaptchaFonts []string `json:"captcha_fonts" toml:"captcha-fonts"`
 		} `json:"session" toml:"session"`
-
-		AuthCookieName  string `json:"auth_cookie_name" toml:"auth-cookie-name"`
-		AuthHeaderName  string `json:"auth_header_name" toml:"auth-header-name"`
-		AuthTokenMaxAge int64  `json:"auth_token_max_age" toml:"auth"`
 	} `json:"http" toml:"http"`
 
 	Database struct {
+		DriverName   string   `json:"driver_name" toml:"driver-name"`
 		WriteableURI string   `json:"writeable_uri" toml:"writeable-uri"`
 		ReadonlyURIs []string `json:"readonly_uris" toml:"readonly-uris"`
 	} `json:"database" toml:"database"`

@@ -1,9 +1,10 @@
 package account
 
 import (
-	"github.com/zzztttkkk/sha"
 	"glass/restapi/output"
 	"glass/service"
+
+	"github.com/zzztttkkk/sha"
 )
 
 func init() {
@@ -13,7 +14,7 @@ func init() {
 
 	Branch.HTTPWithForm(
 		"get",
-		"/name_exists",
+		"/exists",
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form NameForm
 			ctx.MustValidate(&form)
@@ -37,5 +38,4 @@ func init() {
 		}),
 		Form{},
 	)
-
 }

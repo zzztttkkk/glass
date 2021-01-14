@@ -26,7 +26,7 @@ func (u *User) GetID() int64 { return u.ID }
 
 func (u *User) Info(ctx context.Context) interface{} { return nil }
 
-func (u User) TableName() string { return "user" }
+func (u User) TableName() string { return "account_user" }
 
 func (u User) TableColumns(db *x.DB) []string {
 	return append(
@@ -35,6 +35,6 @@ func (u User) TableColumns(db *x.DB) []string {
 		"alias varchar(64) default ''",
 		"avatar varchar(256) default ''",
 		"password char(64) not null",
-		"secret varchar(256) not null",
+		"secret text not null",
 	)
 }

@@ -3,9 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/imdario/mergo"
-	"github.com/zzztttkkk/sha/utils"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +10,10 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+
+	"github.com/BurntSushi/toml"
+	"github.com/imdario/mergo"
+	"github.com/zzztttkkk/sha/utils"
 )
 
 func fromTomlBytes(conf interface{}, data []byte) error {
@@ -53,6 +54,7 @@ func doReplace(fp, name string, value *reflect.Value, path []string) {
 		utils.B(rawValue),
 		func(data []byte) []byte {
 			envK := strings.TrimSpace(string(data[5 : len(data)-1]))
+			fmt.Println(envK, os.Getenv(envK))
 			v := os.Getenv(envK)
 			if len(v) < 1 {
 				panic(fmt.Errorf("glass.config: empty env value; key: `%s`, val: `%s`", key, envK))

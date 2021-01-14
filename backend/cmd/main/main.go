@@ -1,21 +1,24 @@
 package main
 
 import (
-	"github.com/zzztttkkk/sha"
 	_ "glass/cmd/main/internal"
 	"glass/config"
 	"glass/internal"
 	"glass/restapi"
+
+	"github.com/zzztttkkk/sha"
 )
 
-func loadHttpServicesAndRun(conf *config.Type) {
+func run(conf *config.Type) {
 	opt := &conf.HTTP.CorsOptions
 	if opt.CheckOrigin == nil {
 		opt = nil
 	}
+
 	mux := sha.NewMux(conf.HTTP.PathPrefix, opt)
 
 	mux.AddBranch("/api", restapi.Root)
+	mux.HandleDoc("get", "/api/doc")
 
 	server := sha.Default(mux)
 	if len(conf.HTTP.Host) > 0 {
@@ -24,17 +27,17 @@ func loadHttpServicesAndRun(conf *config.Type) {
 	if conf.HTTP.Port > 0 {
 		server.Port = conf.HTTP.Port
 	}
-	mux.Print(false, false)
+	mux.Print()
 	server.ListenAndServe()
 }
 
 func main() {
 	conf := config.Type{}
 
-	loadConfigAndConnectDatabase(&conf)
+	startup(&conf)
 
 	internal.DigContainer.Provide(func() *config.Type { return &conf })
 	internal.DigContainer.Invoke()
 
-	loadHttpServicesAndRun(&conf)
+	run(&conf)
 }

@@ -6,7 +6,6 @@ import {
 	StyledNavigationList,
 	StyledNavigationItem
 } from "baseui/header-navigation";
-import {Button} from "baseui/button";
 import {Wrapper} from "./wrapper";
 import {Avatar} from "baseui/avatar";
 import {useStyletron} from "baseui";
@@ -17,14 +16,9 @@ import utils from "../utils";
 function User(props) {
 	let user = props.user;
 	const [css, theme] = useStyletron();
-	let btnStyle = {width: "6em", display: "block"};
-	let linkStyle = {
-		color: theme.colors.background,
-		textDecoration: "none",
-		":visited": {
-			color: theme.colors.background,
-			textDecoration: "none",
-		}
+	let btnStyle = {
+		display: "block",
+		width: "6em",
 	};
 
 	return <StatefulPopover
@@ -34,37 +28,31 @@ function User(props) {
 			<div className={css({padding: "8px"})}>
 				<BtnLink
 					href={`/account/profile/${user.name}`}
-					btnStyle={btnStyle}
-					linkStyle={linkStyle}
-				>Profile</BtnLink>
-
+					BTN={{BaseButton: {style: {...btnStyle}}}}>
+					Profile
+				</BtnLink>
 				<BtnLink
 					href={`/account/settings`}
-					btnStyle={
-						{
-							...btnStyle,
-							...{marginTop: "8px!important",}
-						}
-					}
-					linkStyle={linkStyle}
-				>Settings</BtnLink>
-
+					BTN={{BaseButton: {style: {...btnStyle, ...{marginTop: "8px", marginBottom: "8px"}}}}}>
+					Settings
+				</BtnLink>
 				<BtnLink
 					href={"/account/logout"}
-					btnStyle={
-						{
-							...btnStyle,
-							...{
-								marginTop: "8px!important",
-								backgroundColor: theme.colors.negative,
-								":hover": {
-									backgroundColor: theme.colors.negative500
+					BTN={{
+						BaseButton: {
+							style: {
+								...btnStyle,
+								...{
+									backgroundColor: theme.colors.negative,
+									":hover": {
+										backgroundColor: theme.colors.negative500
+									}
 								}
 							}
 						}
-					}
-					linkStyle={linkStyle}
-				>Logout</BtnLink>
+					}}>
+					Logout
+				</BtnLink>
 			</div>
 		}
 	>
@@ -130,7 +118,19 @@ export function Header(props) {
 							?
 							<User user={props.user}/>
 							:
-							<Link href={`/account/login?ref=${window.location.pathname}`}><Button>Login</Button></Link>
+							(
+								window.location.pathname === "/account/login"
+									?
+									<BtnLink href={"/account/register"}>
+										{utils.glass.locate.glass.account.register}
+									</BtnLink>
+									:
+									(
+										<BtnLink href={`/account/login?ref=${window.location.pathname}`}>
+											{utils.glass.locate.glass.account.login}
+										</BtnLink>
+									)
+							)
 					}
 				</StyledNavigationItem>
 			</StyledNavigationList>

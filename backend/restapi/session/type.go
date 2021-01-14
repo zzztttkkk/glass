@@ -53,7 +53,7 @@ type Type string
 const sessionKey = ".session"
 
 func New(ctx *sha.RequestCtx) Type {
-	v := ctx.Get(sessionKey)
+	v := ctx.GetData(sessionKey)
 	if v != nil {
 		return v.(Type)
 	}
@@ -79,7 +79,7 @@ func New(ctx *sha.RequestCtx) Type {
 			sid = nil
 		} else {
 			cli.Expire(c, key, maxAge)
-			ctx.Set(sessionKey, Type(key))
+			ctx.SetData(sessionKey, Type(key))
 			return Type(key)
 		}
 	}
@@ -98,7 +98,7 @@ func New(ctx *sha.RequestCtx) Type {
 		ctx.Response.Header.Set(headerName, sid)
 		ctx.Response.Header.Set(headerExpireName, maxAgeSecondsStr)
 	}
-	ctx.Set(sessionKey, Type(key))
+	ctx.SetData(sessionKey, Type(key))
 	return Type(key)
 }
 

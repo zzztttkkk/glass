@@ -1,9 +1,9 @@
 import {Cookie} from "./cookie";
-import {User} from "./user";
 import {toaster} from "baseui/toast";
 import {glass as lg} from "../languages/glass";
+import {Fetch} from "./fetch";
 
-let user = new User("ztk");
+let user = null;
 
 export const glass = {
 	isMobile: false,
@@ -73,6 +73,8 @@ export const glass = {
 		if (!Cookie.get(process.env.REACT_APP_AUTH_COOKIE_NAME)) {
 			return null
 		}
-		return null;
+		let data = await Fetch.GET("api/account/info");
+		console.log(data);
+		return data;
 	},
 };

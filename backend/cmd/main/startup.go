@@ -2,14 +2,16 @@ package main
 
 import (
 	"flag"
-	"github.com/zzztttkkk/sha/sqlx"
 	"glass/config"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
+
+	"github.com/zzztttkkk/sha/sqlx"
 )
 
-func loadConfigAndConnectDatabase(cfg *config.Type) {
+func startup(cfg *config.Type) {
 	cp := flag.String("c", "", "config file path")
 	flag.Parse()
 	if len(*cp) > 0 {
@@ -36,10 +38,12 @@ func loadConfigAndConnectDatabase(cfg *config.Type) {
 		} else {
 			config.FromFiles(cfg, *cp)
 		}
+	} else {
+		log.Fatalln("glass: empty config")
 	}
 
-	sqlx.OpenWriteableDB("mysql", cfg.Database.WriteableURI)
+	sqlx.OpenWriteableDB(cfg.Database.DriverName, cfg.Database.WriteableURI)
 	for _, uri := range cfg.Database.ReadonlyURIs {
-		sqlx.OpenReadableDB("mysql", uri)
+		sqlx.OpenReadableDB(cfg.Database.DriverName, uri)
 	}
 }

@@ -5,10 +5,16 @@ export const glass_zhCN = {
 		release: "发布",
 		saved: "以保存"
 	},
-	header: {
-
-	},
-	editor: {}
+	header: {},
+	editor: {},
+	account: {
+		register: "注册",
+		login: "登录",
+		fgpwd: "忘记密码",
+		username: "账号：",
+		password: "密码：",
+		rePassword: "密码："
+	}
 }
 
 export const glass = glass_zhCN;

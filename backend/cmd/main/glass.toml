@@ -1,11 +1,13 @@
+secret = "123456"
+
 [http]
-port = 8079
+port = 5986
 
 [database]
+driver-name = "mysql"
 writeable-uri = "root:123456@/glass"
 
 [redis]
 mode = "singleton"
 nodes = ["redis://127.0.0.1:6379"]
-
 

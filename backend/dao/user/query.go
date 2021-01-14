@@ -1,7 +1,6 @@
 package user
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"glass/dao/model"
@@ -37,7 +36,7 @@ func (Namespace) Auth(ctx context.Context, name, pwd []byte) (uid int64) {
 		}
 		panic(err)
 	}
-	if bytes.Equal(_pwd, genPwdHash(pwd)) {
+	if pwdHashPool.Equal(pwd, _pwd) {
 		return uid
 	}
 	return -1
