@@ -18,7 +18,7 @@ func init() {
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form NameForm
 			ctx.MustValidate(&form)
-			output.OK(ctx, service.Account.DoCheckNameExists(ctx.Context(), form.Name))
+			output.OK(ctx, service.Account.DoCheckNameExists(ctx, form.Name))
 		}),
 		NameForm{},
 	)
@@ -34,7 +34,7 @@ func init() {
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form Form
 			ctx.MustValidate(&form)
-			output.OK(ctx, service.Account.DoRegister(ctx.Context(), form.Name, form.Password))
+			output.OK(ctx, service.Account.DoRegister(ctx, form.Name, form.Password))
 		}),
 		Form{},
 	)

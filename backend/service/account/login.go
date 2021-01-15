@@ -38,8 +38,8 @@ func (Namespace) DoLogin(ctx context.Context, name, password []byte) (ret string
 }
 
 func (Namespace) Auth(ctx context.Context) (auth.Subject, error) {
-	rctx := sha.RCtx(ctx)
-	subject := rctx.GetData(internal.UserDataKeySubject)
+	rctx := sha.MustToRCtx(ctx)
+	subject := rctx.Get(internal.UserDataKeys.Subject)
 	if subject != nil {
 		return subject.(auth.Subject), nil
 	}
@@ -61,6 +61,6 @@ func (Namespace) Auth(ctx context.Context) (auth.Subject, error) {
 		return nil, sha.StatusError(sha.StatusUnauthorized)
 	}
 
-	rctx.SetData(internal.UserDataKeySubject, user)
+	rctx.Set(internal.UserDataKeys.Subject, user)
 	return user, nil
 }

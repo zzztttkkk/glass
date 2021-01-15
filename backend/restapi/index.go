@@ -3,7 +3,8 @@ package restapi
 import (
 	"github.com/zzztttkkk/sha"
 	"glass/restapi/account"
-	"glass/restapi/session"
+	"glass/service/session"
+	"image/png"
 )
 
 var Root = sha.NewBranch()
@@ -21,7 +22,10 @@ func init() {
 	Root.HTTP(
 		"get", "/captcha.png",
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
-
+			img := session.New(ctx).CaptchaGenPNG(ctx)
+			if err := png.Encode(ctx, img); err != nil {
+				panic(err)
+			}
 		}),
 	)
 }

@@ -32,13 +32,13 @@ func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
 			cli = cfg.GetRedisClient()
-			cookieName = cfg.HTTP.Session.CookieName
-			headerName = cfg.HTTP.Session.HeaderName
+			cookieName = cfg.Session.CookieName
+			headerName = cfg.Session.HeaderName
 			headerExpireName = headerName + "-Expire"
-			maxAgeSeconds = int64(cfg.HTTP.Session.MaxAge)
-			maxAge = time.Second * time.Duration(cfg.HTTP.Session.MaxAge)
+			maxAgeSeconds = int64(cfg.Session.MaxAge)
+			maxAge = time.Second * time.Duration(cfg.Session.MaxAge)
 			maxAgeSecondsStr = utils.B(strconv.FormatInt(maxAgeSeconds, 10))
-			prefix = cfg.HTTP.Session.StorageKeyPrefix
+			prefix = cfg.Session.StorageKeyPrefix
 			var err error
 			resetScriptHash, err = cli.ScriptLoad(context.Background(), resetScript).Result()
 			if err != nil {
@@ -53,7 +53,7 @@ type Type string
 const sessionKey = ".session"
 
 func New(ctx *sha.RequestCtx) Type {
-	v := ctx.GetData(sessionKey)
+	v := ctx.Get(sessionKey)
 	if v != nil {
 		return v.(Type)
 	}
@@ -71,22 +71,20 @@ func New(ctx *sha.RequestCtx) Type {
 		byCookie = true
 	}
 
-	c := ctx.Context()
-
 	if len(sid) > 0 {
 		key = prefix + utils.S(sid)
-		if cli.Exists(c, key).Val() < 1 {
+		if cli.Exists(ctx, key).Val() < 1 {
 			sid = nil
 		} else {
-			cli.Expire(c, key, maxAge)
-			ctx.SetData(sessionKey, Type(key))
+			cli.Expire(ctx, key, maxAge)
+			ctx.Set(sessionKey, Type(key))
 			return Type(key)
 		}
 	}
 
 	sid = utils.B(xid.New().String())
 	key = prefix + utils.S(sid)
-	if err := cli.EvalSha(c, resetScriptHash, nil, key, time.Now().Unix(), maxAgeSeconds).Err(); err != nil {
+	if err := cli.EvalSha(ctx, resetScriptHash, nil, key, time.Now().Unix(), maxAgeSeconds).Err(); err != nil {
 		if err != redis.Nil {
 			panic(err)
 		}
@@ -98,7 +96,7 @@ func New(ctx *sha.RequestCtx) Type {
 		ctx.Response.Header.Set(headerName, sid)
 		ctx.Response.Header.Set(headerExpireName, maxAgeSecondsStr)
 	}
-	ctx.SetData(sessionKey, Type(key))
+	ctx.Set(sessionKey, Type(key))
 	return Type(key)
 }
 
@@ -124,6 +122,14 @@ func (s Type) Set(ctx context.Context, key string, val interface{}) {
 func (s Type) Del(ctx context.Context, keys ...string) { cli.HDel(ctx, string(s), keys...) }
 
 func (s Type) Refresh(ctx context.Context) { cli.Expire(ctx, string(s), maxAge) }
+
+func (s Type) IncrBy(ctx context.Context, key string, increment int64) int64 {
+	v, e := cli.HIncrBy(ctx, string(s), key, increment).Result()
+	if e != nil {
+		panic(e)
+	}
+	return v
+}
 
 func (s Type) Clear(ctx context.Context) {
 	cli.EvalSha(ctx, resetScriptHash, nil, string(s), time.Now().Unix(), maxAgeSeconds)

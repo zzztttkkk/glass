@@ -1,5 +1,7 @@
 package internal
 
-const (
-	UserDataKeySubject = ".s"
-)
+var UserDataKeys = struct {
+	Subject string
+}{
+	Subject: ".s",
+}

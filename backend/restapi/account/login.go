@@ -34,7 +34,7 @@ func init() {
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form PostForm
 			ctx.MustValidate(&form)
-			token := service.Account.DoLogin(ctx.Context(), form.Name, form.Password)
+			token := service.Account.DoLogin(ctx, form.Name, form.Password)
 			if len(token) < 1 {
 				ctx.SetStatus(http.StatusBadRequest)
 				return
@@ -56,7 +56,7 @@ func init() {
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form GetForm
 			ctx.MustValidate(&form)
-			token := service.Account.DoLogin(ctx.Context(), form.Name, form.Password)
+			token := service.Account.DoLogin(ctx, form.Name, form.Password)
 			if len(token) < 1 {
 				ctx.SetStatus(http.StatusBadRequest)
 				return

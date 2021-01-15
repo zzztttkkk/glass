@@ -8,6 +8,10 @@ import (
 type Type struct {
 	Secret string `json:"secret" toml:"secret"`
 
+	Static struct {
+		DistPath string `json:"dist_path" toml:"dist-path"`
+	} `json:"static" toml:"static"`
+
 	Auth struct {
 		CookieName  string `json:"cookie_name" toml:"cookie-name"`
 		HeaderName  string `json:"header_name" toml:"header-name"`
@@ -39,23 +43,24 @@ type Type struct {
 		PathPrefix string `json:"path_prefix" toml:"path-prefix"`
 
 		CorsOptions sha.CorsOptions `json:"cors" toml:"cors"`
-
-		Session struct {
-			CookieName       string `json:"cookie_name" toml:"cookie-name"`
-			HeaderName       string `json:"header_name" toml:"header-name"`
-			MaxAge           int    `json:"max_age" toml:"max-age"`
-			StorageKeyPrefix string `json:"storage_key_prefix" toml:"storage-key-prefix"`
-
-			CRSF struct {
-				CookieName  string `json:"cookie_name" toml:"cookie-name"`
-				HeaderName  string `json:"header_name" toml:"header-name"`
-				StorageName string `json:"storage_name" toml:"storage-name"`
-				MaxAge      int    `json:"max_age" toml:"max-age"`
-			} `json:"crsf" toml:"crsf"`
-
-			CaptchaFonts []string `json:"captcha_fonts" toml:"captcha-fonts"`
-		} `json:"session" toml:"session"`
 	} `json:"http" toml:"http"`
+
+	Session struct {
+		CookieName       string `json:"cookie_name" toml:"cookie-name"`
+		HeaderName       string `json:"header_name" toml:"header-name"`
+		MaxAge           int    `json:"max_age" toml:"max-age"`
+		StorageKeyPrefix string `json:"storage_key_prefix" toml:"storage-key-prefix"`
+
+		CRSF struct {
+			CookieName  string `json:"cookie_name" toml:"cookie-name"`
+			HeaderName  string `json:"header_name" toml:"header-name"`
+			StorageName string `json:"storage_name" toml:"storage-name"`
+			MaxAge      int    `json:"max_age" toml:"max-age"`
+		} `json:"crsf" toml:"crsf"`
+
+		CaptchaFonts []string `json:"captcha_fonts" toml:"captcha-fonts"`
+		CaptchaSkip  bool     `json:"captcha_skip" toml:"captcha-skip"`
+	} `json:"session" toml:"session"`
 
 	Database struct {
 		DriverName   string   `json:"driver_name" toml:"driver-name"`
@@ -84,12 +89,12 @@ func _Default() Type {
 	v := Type{
 		Secret: "$ENV{GLASS_SECRET}",
 	}
-	v.HTTP.Session.StorageKeyPrefix = "session:"
-	v.HTTP.Session.MaxAge = 1800
-	v.HTTP.Session.HeaderName = "GlassSession"
-	v.HTTP.Session.CookieName = "_gsi"
-	v.HTTP.Session.CRSF.CookieName = "_gcrsfp"
-	v.HTTP.Session.CRSF.HeaderName = "GlassCRSF"
-	v.HTTP.Session.CRSF.MaxAge = 900
+	v.Session.StorageKeyPrefix = "session:"
+	v.Session.MaxAge = 1800
+	v.Session.HeaderName = "GlassSession"
+	v.Session.CookieName = "_gsi"
+	v.Session.CRSF.CookieName = "_gcrsfp"
+	v.Session.CRSF.HeaderName = "GlassCRSF"
+	v.Session.CRSF.MaxAge = 900
 	return v
 }
