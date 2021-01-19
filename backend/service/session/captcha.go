@@ -25,21 +25,18 @@ func init() {
 }
 
 func shuffleOne(v []string) string {
+	ind := int(rand.Uint32()) % len(v)
 	var buf strings.Builder
-	switch rand.Uint32() & 1 {
-	case 0:
-		a := []rune(v[0])
-		rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
-		for _, r := range a {
-			buf.WriteRune(r)
-		}
-		buf.WriteString(v[1])
-	case 1:
-		buf.WriteString(v[0])
-		a := []rune(v[1])
-		rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
-		for _, r := range a {
-			buf.WriteRune(r)
+
+	for i, t := range v {
+		if i == ind {
+			a := []rune(t)
+			rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+			for _, r := range a {
+				buf.WriteRune(r)
+			}
+		} else {
+			buf.WriteString(t)
 		}
 	}
 	return buf.String()
@@ -50,7 +47,7 @@ func (s Type) CaptchaGenPNG(ctx *sha.RequestCtx) image.Image {
 	var lastCTime int64
 	var now = time.Now().Unix()
 	if s.Get(ctx, internal.SessionKeys.CaptchaTime, &lastCTime) && now-lastCTime < 60 {
-		panic(sha.StatusError(sha.StatusTooManyRequests))
+		//panic(sha.StatusError(sha.StatusTooManyRequests))
 	}
 
 	poem := RandTangPoem()

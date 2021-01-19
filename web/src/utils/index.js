@@ -3,6 +3,7 @@ import {Cookie} from "./cookie";
 import {glass} from "./glass";
 import {Override} from "./overrides";
 import {Fragment} from "./fragment";
+import {Fetch} from "./fetch";
 
 global.glass = glass;
 
@@ -19,5 +20,6 @@ export default {
 	glass,
 	Cookie,
 	Override,
-	Fragment
+	Fragment,
+	Fetch
 }

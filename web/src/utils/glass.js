@@ -16,10 +16,23 @@ export const glass = {
 	theme: {},
 	toaster: {
 		toaster,
-		autoClose: function (msg, timeout, level = "info") {
-			let key = this.toaster[level](msg);
+		autoClose: function (msg, timeout, level = "info", ext = null) {
+			let key = this.toaster[level](
+				msg,
+				{
+					overrides: {
+						Body: {
+							style: {width: '400px'},
+						},
+					},
+					...ext
+				});
 			window.setTimeout((() => this.toaster.clear(key)), timeout)
-		}
+		},
+		info: "info",
+		warning: "warning",
+		negative: "negative",
+		positive: "positive"
 	},
 	setTitle: function (t) {
 	},

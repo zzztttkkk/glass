@@ -7,10 +7,18 @@ import {useStyletron} from "baseui";
 import {BtnLink} from "../../comps/link";
 import {Button} from "baseui/button";
 import utils from "../../utils"
+import {Captcha} from "../../comps/captcha";
+
 
 function FormGroup(props) {
 	const [username, setUsername] = React.useState("");
-	const [usernameInErr, setUsernameInErr] = React.useState(false);
+	const [usernameErr, setUsernameErr] = React.useState("");
+	const [password, setPassword] = React.useState("");
+	const [passwordErr, setPasswordErr] = React.useState("");
+	const [captcha, setCaptcha] = React.useState("");
+	const [captchaErr, setCaptchaErr] = React.useState("");
+	const [obj] = React.useState({incr: (v => void 0)});
+
 	const [css, theme] = useStyletron();
 	return <div
 		className={css(
@@ -28,10 +36,10 @@ function FormGroup(props) {
 				startEnhancer={utils.glass.locate.glass.account.username}
 				type={"text"}
 				value={username}
-				error={usernameInErr}
+				error={usernameErr}
 				onChange={(evt) => {
 					evt.stopPropagation();
-					setUsernameInErr(false);
+					setUsernameErr(false);
 					setUsername(evt.currentTarget.value);
 				}}
 				onBlur={
@@ -43,11 +51,20 @@ function FormGroup(props) {
 			/>
 		</FormControl>
 		<FormControl>
-			<Input clearable
+			<Input clearable value={password} onChange={(event => setPassword(event.currentTarget.value))}
 				   overrides={{StartEnhancer: {style: {width: "4em"}}}}
 				   startEnhancer={utils.glass.locate.glass.account.password}
 				   type={"password"}/>
 		</FormControl>
+
+		<FormControl>
+			<Input clearable
+				   onFocus={(event => obj.incr())}
+				   overrides={{StartEnhancer: {style: {width: "4em"}}}}
+				   startEnhancer={utils.glass.locate.glass.common.captcha}
+				   type={"text"}/>
+		</FormControl>
+		<Captcha obj={obj} where={"account.login"}/>
 		<div>
 			<BtnLink href={"/account/register"} BTN={{BaseButton: {style: {marginRight: "16px"}}}}>
 				{utils.glass.locate.glass.account.register}

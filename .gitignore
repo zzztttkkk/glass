@@ -17,6 +17,8 @@ go.sum
 **/yarn-error.log*
 **/yarn.lock
 **/.eslintcache
+**/glass.local.toml
+*.log
 
 *.exe~
 *.dll
@@ -31,5 +33,3 @@ go.sum
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-
-**/glass.local.toml
