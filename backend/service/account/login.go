@@ -56,7 +56,7 @@ func (Namespace) Auth(ctx context.Context) (auth.Subject, error) {
 	if err != nil {
 		return nil, sha.StatusError(sha.StatusUnauthorized)
 	}
-	user := dao.User.InfoByID(ctx, uid)
+	user := dao.User.GetByID(ctx, uid)
 	if user == nil {
 		return nil, sha.StatusError(sha.StatusUnauthorized)
 	}

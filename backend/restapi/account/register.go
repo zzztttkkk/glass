@@ -3,6 +3,7 @@ package account
 import (
 	"glass/restapi/output"
 	"glass/service"
+	"glass/service/session"
 
 	"github.com/zzztttkkk/sha"
 )
@@ -34,6 +35,8 @@ func init() {
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			var form Form
 			ctx.MustValidate(&form)
+			session.New(ctx).CaptchaVerify(ctx)
+
 			output.OK(ctx, service.Account.DoRegister(ctx, form.Name, form.Password))
 		}),
 		Form{},

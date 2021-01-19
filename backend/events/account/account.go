@@ -1,4 +1,4 @@
-package events
+package account
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 type _AccountNamespace struct{}
 
-var Account _AccountNamespace
+var Namespace _AccountNamespace
 
 func (_AccountNamespace) AfterRegister(ctx context.Context, uid int64) {
 	fmt.Printf("user registered: %d\n", uid)

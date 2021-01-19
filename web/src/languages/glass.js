@@ -3,7 +3,7 @@ export const glass_zhCN = {
 		submit: "提交",
 		comment: "评论",
 		release: "发布",
-		saved: "以保存"
+		saved: "已保存"
 	},
 	header: {},
 	editor: {},

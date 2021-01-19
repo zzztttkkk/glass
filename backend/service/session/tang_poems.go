@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"os"
 	"strings"
-	"time"
 )
 
 type TangPoem struct {
@@ -20,8 +19,8 @@ type TangPoem struct {
 
 var allTangPoetry []TangPoem
 var tangPoetryJsonData []byte
-var mrand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
+// todo embed when 1.16
 func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
@@ -48,4 +47,4 @@ func init() {
 	)
 }
 
-func RandTangPoem() *TangPoem { return &(allTangPoetry[int(mrand.Uint32())%len(allTangPoetry)]) }
+func RandTangPoem() *TangPoem { return &(allTangPoetry[int(rand.Uint32())%len(allTangPoetry)]) }

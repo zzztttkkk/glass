@@ -4,9 +4,10 @@ import (
 	"context"
 	"github.com/zzztttkkk/sha/auth"
 	"github.com/zzztttkkk/sha/sqlx"
+	"github.com/zzztttkkk/sha/utils"
 	"glass/dao"
 	"glass/dao/model"
-	"glass/events"
+	"glass/events/account"
 )
 
 func (Namespace) DoUnregister(ctx context.Context, secret []byte) {
@@ -15,6 +16,6 @@ func (Namespace) DoUnregister(ctx context.Context, secret []byte) {
 
 	user := auth.MustAuth(ctx).(*model.User)
 
-	events.Account.BeforeUnregister(ctx, user)
-	dao.User.Delete(ctx, user.Name, secret)
+	account.Namespace.BeforeUnregister(ctx, user)
+	dao.User.Delete(ctx, utils.B(user.Name), secret)
 }

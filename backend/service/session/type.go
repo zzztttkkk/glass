@@ -19,6 +19,7 @@ var headerName string
 var headerExpireName string
 var maxAge time.Duration
 var maxAgeSeconds int64
+var qOfMaxAge int64
 var maxAgeSecondsStr []byte
 var prefix string
 
@@ -37,6 +38,7 @@ func init() {
 			headerExpireName = headerName + "-Expire"
 			maxAgeSeconds = int64(cfg.Session.MaxAge)
 			maxAge = time.Second * time.Duration(cfg.Session.MaxAge)
+			qOfMaxAge = maxAgeSeconds * 3 / 4
 			maxAgeSecondsStr = utils.B(strconv.FormatInt(maxAgeSeconds, 10))
 			prefix = cfg.Session.StorageKeyPrefix
 			var err error
@@ -48,12 +50,19 @@ func init() {
 	)
 }
 
+func response(sid []byte, ctx *sha.RequestCtx, byCookie bool) {
+	if byCookie {
+		ctx.Response.SetCookie(cookieName, utils.S(sid), nil)
+	} else {
+		ctx.Response.Header.Set(headerName, sid)
+		ctx.Response.Header.Set(headerExpireName, maxAgeSecondsStr)
+	}
+}
+
 type Type string
 
-const sessionKey = ".session"
-
 func New(ctx *sha.RequestCtx) Type {
-	v := ctx.Get(sessionKey)
+	v := ctx.Get(internal.UserDataKeys.Session)
 	if v != nil {
 		return v.(Type)
 	}
@@ -73,11 +82,14 @@ func New(ctx *sha.RequestCtx) Type {
 
 	if len(sid) > 0 {
 		key = prefix + utils.S(sid)
-		if cli.Exists(ctx, key).Val() < 1 {
+		ct, err := cli.HGet(ctx, key, ".created").Int64()
+		if err != nil {
 			sid = nil
 		} else {
-			cli.Expire(ctx, key, maxAge)
-			ctx.Set(sessionKey, Type(key))
+			if time.Now().Unix()-ct >= qOfMaxAge {
+				cli.HSet(ctx, key, ".created", time.Now().Unix())
+				cli.Expire(ctx, key, maxAge)
+			}
 			return Type(key)
 		}
 	}
@@ -89,14 +101,8 @@ func New(ctx *sha.RequestCtx) Type {
 			panic(err)
 		}
 	}
-
-	if byCookie {
-		ctx.Response.SetCookie(cookieName, utils.S(sid), nil)
-	} else {
-		ctx.Response.Header.Set(headerName, sid)
-		ctx.Response.Header.Set(headerExpireName, maxAgeSecondsStr)
-	}
-	ctx.Set(sessionKey, Type(key))
+	ctx.Set(internal.UserDataKeys.Session, Type(key))
+	response(sid, ctx, byCookie)
 	return Type(key)
 }
 
@@ -117,6 +123,18 @@ func (s Type) Set(ctx context.Context, key string, val interface{}) {
 		panic(e)
 	}
 	cli.HSet(ctx, string(s), key, p)
+}
+
+func (s Type) SetNX(ctx context.Context, key string, val interface{}) bool {
+	p, e := json.Marshal(val)
+	if e != nil {
+		panic(e)
+	}
+	ret, err := cli.HSetNX(ctx, string(s), key, p).Result()
+	if err != nil {
+		panic(err)
+	}
+	return ret
 }
 
 func (s Type) Del(ctx context.Context, keys ...string) { cli.HDel(ctx, string(s), keys...) }

@@ -3,13 +3,14 @@ package account
 import (
 	"context"
 	"github.com/zzztttkkk/sha/sqlx"
+	"github.com/zzztttkkk/sha/utils"
 	"glass/dao"
-	"glass/events"
+	"glass/events/account"
 )
 
 type MsgRegister struct {
-	UserId int64                `json:"user_id"`
-	Secret sqlx.JsonBytesString `json:"secret"`
+	UserId int64  `json:"user_id"`
+	Secret string `json:"secret"`
 }
 
 func (Namespace) DoRegister(ctx context.Context, name, password []byte) MsgRegister {
@@ -17,8 +18,8 @@ func (Namespace) DoRegister(ctx context.Context, name, password []byte) MsgRegis
 	defer committer()
 
 	uid, sec := dao.User.Insert(ctx, name, password)
-	events.Account.AfterRegister(ctx, uid)
-	return MsgRegister{UserId: uid, Secret: sec}
+	account.Namespace.AfterRegister(ctx, uid)
+	return MsgRegister{UserId: uid, Secret: utils.S(sec)}
 }
 
 func (Namespace) DoCheckNameExists(ctx context.Context, name []byte) bool {

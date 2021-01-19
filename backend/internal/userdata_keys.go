@@ -1,7 +1,9 @@
 package internal
 
 var UserDataKeys = struct {
+	Session string
 	Subject string
 }{
-	Subject: ".s",
+	Session: ".se",
+	Subject: ".su",
 }

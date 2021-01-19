@@ -2,14 +2,21 @@ package config
 
 import (
 	"github.com/go-redis/redis/v8"
-	"github.com/zzztttkkk/sha"
+)
+
+const (
+	EnvDevelopment = "development"
+	EnvTesting     = "testing"
+	EnvProduction  = "production"
 )
 
 type Type struct {
+	Env    string `json:"env" toml:"env"`
 	Secret string `json:"secret" toml:"secret"`
 
 	Static struct {
-		DistPath string `json:"dist_path" toml:"dist-path"`
+		DistPath     string `json:"dist_path" toml:"dist-path"`
+		WebBuildPath string `json:"web_build_path" toml:"web-build-path"`
 	} `json:"static" toml:"static"`
 
 	Auth struct {
@@ -41,8 +48,6 @@ type Type struct {
 
 		// router
 		PathPrefix string `json:"path_prefix" toml:"path-prefix"`
-
-		CorsOptions sha.CorsOptions `json:"cors" toml:"cors"`
 	} `json:"http" toml:"http"`
 
 	Session struct {

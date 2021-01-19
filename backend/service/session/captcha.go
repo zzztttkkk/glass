@@ -7,11 +7,12 @@ import (
 	"glass/config"
 	"glass/internal"
 	"image"
+	"math/rand"
 	"strings"
 	"time"
 )
 
-var captchaOptions = &captcha.Options{OffsetX: 10, OffsetY: 10, Points: 400}
+var captchaOptions = &captcha.Options{OffsetX: 12, OffsetY: 12, Points: 240}
 var skip bool
 
 func init() {
@@ -25,10 +26,10 @@ func init() {
 
 func shuffleOne(v []string) string {
 	var buf strings.Builder
-	switch mrand.Uint32() & 1 {
+	switch rand.Uint32() & 1 {
 	case 0:
 		a := []rune(v[0])
-		mrand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+		rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
 		for _, r := range a {
 			buf.WriteRune(r)
 		}
@@ -36,7 +37,7 @@ func shuffleOne(v []string) string {
 	case 1:
 		buf.WriteString(v[0])
 		a := []rune(v[1])
-		mrand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+		rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
 		for _, r := range a {
 			buf.WriteRune(r)
 		}
@@ -53,7 +54,7 @@ func (s Type) CaptchaGenPNG(ctx *sha.RequestCtx) image.Image {
 	}
 
 	poem := RandTangPoem()
-	ind := int(mrand.Uint32()) % len(poem.Contents)
+	ind := int(rand.Uint32()) % len(poem.Contents)
 	verse := poem.Contents[ind]
 
 	s.Set(ctx, internal.SessionKeys.CaptchaVerse, verse)
@@ -65,7 +66,7 @@ func (s Type) CaptchaGenPNG(ctx *sha.RequestCtx) image.Image {
 var exr = map[rune]struct{}{}
 
 func init() {
-	for _, r := range " ,.!?'\"，。？《》“”" {
+	for _, r := range " ,.!?'\"，。？《》“”~……" {
 		exr[r] = struct{}{}
 	}
 }

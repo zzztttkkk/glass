@@ -15,8 +15,7 @@ function newQuill(Q, onChange) {
 			theme: "snow",
 			modules: {
 				toolbar: [
-					[{'font': []}, {'size': []}],
-					[{'header': [1, 2, 3, 4, 5, 6, false]}, 'bold', 'italic', 'underline', 'strike'],
+					[{'header': [2, false]}, 'bold', 'italic', 'underline', 'strike'],
 					[{'color': []}, {'background': []}],
 					[{'script': 'super'}, {'script': 'sub'}],
 					['link', 'blockquote', 'code-block', 'formula'],
@@ -62,7 +61,7 @@ function newQuill(Q, onChange) {
 						break;
 					}
 					case "keyboard": {
-						fn = (evt => document.querySelector("#editor .ql-editor").blur())
+						fn = (evt => document.activeElement.blur())
 						break;
 					}
 					default: {
@@ -95,7 +94,7 @@ function newQuill(Q, onChange) {
 
 
 function Editor() {
-	const [css] = useStyletron();
+	const [css, theme] = useStyletron();
 	const [title, _setTitle] = React.useState("");
 	const [contentSize, setContentSize] = React.useState(0);
 
@@ -154,18 +153,20 @@ function Editor() {
 
 	return <>
 		<Wrapper overrides={{Root: {style: {marginBottom: "32px"}}}}>
-			<div className={css({marginBottom: "16px", display: "flex"})}>
-				<Input overrides={{Input: {style: {fontSize: "2em"}}}}
-					   placeholder={"Title"}
-					   value={title}
-					   onChange={(event => setTitle(event.currentTarget.value))}
-				/>
-				<Button disabled={contentSize < 200 || title.length < 1}
-						overrides={{BaseButton: {style: {marginLeft: "16px"}}}}
-						onClick={submit}
-				>Submit</Button>
+			<div className={css({[theme.mediaQuery.large]: {width: "840px", margin: "0 auto"}})}>
+				<div className={css({marginBottom: "16px", display: "flex"})}>
+					<Input overrides={{Input: {style: {fontSize: "2em"}}}}
+						   placeholder={"Title"}
+						   value={title}
+						   onChange={(event => setTitle(event.currentTarget.value))}
+					/>
+					<Button disabled={contentSize < 200 || title.length < 1}
+							overrides={{BaseButton: {style: {marginLeft: "16px"}}}}
+							onClick={submit}
+					>Submit</Button>
+				</div>
+				<div id={"editor"}/>
 			</div>
-			<div id={"editor"}/>
 		</Wrapper>
 		{
 			showSubmitDialog &&

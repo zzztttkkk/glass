@@ -105,7 +105,7 @@ export function Header(props) {
 						<h1>Glass</h1>
 					</Link>
 				</StyledNavigationItem>
-				<StyledNavigationItem><Link href={"/link1"}>Link1</Link></StyledNavigationItem>
+				{/*<StyledNavigationItem><Link href={"/link1"}>Link1</Link></StyledNavigationItem>*/}
 				<StyledNavigationItem><Link href={"/editor"}>Editor</Link></StyledNavigationItem>
 			</StyledNavigationList>
 

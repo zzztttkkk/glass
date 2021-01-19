@@ -23,9 +23,11 @@ func init() {
 		"get", "/captcha.png",
 		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
 			img := session.New(ctx).CaptchaGenPNG(ctx)
+			ctx.Response.Header.SetContentType(sha.MIMEPng)
 			if err := png.Encode(ctx, img); err != nil {
 				panic(err)
 			}
 		}),
 	)
+
 }

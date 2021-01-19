@@ -11,16 +11,17 @@ type User struct {
 	sqlx.Model
 
 	// info
-	Name   sqlx.JsonBytesString `db:"name,g=info|pub_info" json:"name"`
-	Alias  sqlx.JsonBytesString `db:"alias,g=info|pub_info"`
-	Avatar sqlx.JsonBytesString `db:"avatar,g=info|pub_info" json:"avatar"`
+	Name   string `db:"name,g=info|pub_info" json:"name"`
+	Alias  string `db:"alias,g=info|pub_info"`
+	Avatar string `db:"avatar,g=info|pub_info" json:"avatar"`
 
 	// secret
-	Password sqlx.JsonBytesString `db:"password" json:"-"`
-	Secret   sqlx.JsonBytesString `db:"secret" json:"-"`
+	Password string `db:"password" json:"-"`
+	Secret   string `db:"secret" json:"-"`
 }
 
 var _ auth.Subject = (*User)(nil)
+var _ sqlx.Modeler = (*User)(nil)
 
 func (u *User) GetID() int64 { return u.ID }
 
