@@ -122,12 +122,12 @@ export function Header(props) {
 								window.location.pathname === "/account/login"
 									?
 									<BtnLink href={"/account/register"}>
-										{utils.glass.locate.glass.account.register}
+										{utils.glass.localization.glass.account.register}
 									</BtnLink>
 									:
 									(
 										<BtnLink href={`/account/login?ref=${window.location.pathname}`}>
-											{utils.glass.locate.glass.account.login}
+											{utils.glass.localization.glass.account.login}
 										</BtnLink>
 									)
 							)

@@ -2,6 +2,8 @@ package config
 
 import (
 	"github.com/go-redis/redis/v8"
+	"github.com/zzztttkkk/sha"
+	"github.com/zzztttkkk/sha/utils"
 )
 
 const (
@@ -48,6 +50,12 @@ type Type struct {
 
 		// router
 		PathPrefix string `json:"path_prefix" toml:"path-prefix"`
+
+		// CORS
+		CORS []struct {
+			Origin string `json:"origin" toml:"origin"`
+			sha.CorsConfig
+		} `json:"cors" toml:"cors"`
 	} `json:"http" toml:"http"`
 
 	Session struct {
@@ -88,6 +96,18 @@ func (t *Type) GetRedisClient() redis.Cmdable {
 		t.initRedisClient()
 	}
 	return t.internal.redisCli
+}
+
+func (t *Type) GetCORSChecker() sha.CORSOriginChecker {
+	var co sha.CORSOriginChecker
+	if len(t.HTTP.CORS) > 0 {
+		m := map[string]*sha.CorsOptions{}
+		for _, v := range t.HTTP.CORS {
+			m[v.Origin] = sha.NewCorsOptions(&v.CorsConfig)
+		}
+		co = func(origin []byte) *sha.CorsOptions { return m[utils.S(origin)] }
+	}
+	return co
 }
 
 func _Default() Type {

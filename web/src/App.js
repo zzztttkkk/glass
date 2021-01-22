@@ -4,21 +4,18 @@ import {Client as Styletron} from "styletron-engine-atomic";
 import {Provider as StyletronProvider} from "styletron-react";
 import {LightTheme, BaseProvider, LocaleProvider, useStyletron} from "baseui";
 import {ToasterContainer} from 'baseui/toast';
+import {ErrNotFoundPage} from "./error";
 import utils from "./utils";
 import langs from "./languages"
 
 
 // pages
 import {HomePage} from "./home";
-import {Account as AccountPages} from "./account";
 import {EditorPage} from "./editor";
 
-const Root = new utils.PathSwitch(
-	"",
-	function () {
-		return <h1>NotFound</h1>;
-	}
-);
+import {Account as AccountPages} from "./account";
+
+const Root = new utils.PathSwitch("", ErrNotFoundPage);
 
 Root.register("/", HomePage);
 Root.register("/editor", EditorPage);
@@ -68,11 +65,11 @@ let check = false;
 utils.glass.isMobile = check;
 
 function App() {
-	utils.glass.locate = langs.ZHCN;
+	utils.glass.localization = langs.ZHCN;
 	const [locate, setLocate] = React.useState(langs.ZHCN);
-	utils.glass.setLocate = function (v) {
+	utils.glass.setLocalization = function (v) {
 		setLocate(v);
-		utils.glass.locate = v;
+		utils.glass.localization = v;
 	};
 	if (!locate) {
 		return <Inner/>

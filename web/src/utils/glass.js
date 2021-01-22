@@ -8,8 +8,8 @@ let user = null;
 export const glass = {
 	isMobile: false,
 	setTheme: null,
-	locate: {glass: lg},
-	setLocate: null,
+	localization: {glass: lg},
+	setLocalization: null,
 	css: (v) => {
 		return ""
 	},
@@ -32,7 +32,10 @@ export const glass = {
 		info: "info",
 		warning: "warning",
 		negative: "negative",
-		positive: "positive"
+		positive: "positive",
+		onFetchError: function (status, timeout = 2000, level = "negative") {
+			this.autoClose(glass.localization.glass.status[status], timeout, level);
+		}
 	},
 	setTitle: function (t) {
 	},
@@ -56,7 +59,7 @@ export const glass = {
 		save: function () {
 			window.localStorage.setItem("editor::content", JSON.stringify(this.getContents()));
 			window.localStorage.setItem("editor::title", this.getTitle());
-			glass.toaster.autoClose(glass.locate.glass.common.saved, 500, "positive");
+			glass.toaster.autoClose(glass.localization.glass.common.saved, 500, "positive");
 		},
 		load: function () {
 			let v = window.localStorage.getItem("editor::content");

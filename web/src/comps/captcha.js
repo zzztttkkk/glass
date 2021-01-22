@@ -9,7 +9,7 @@ export function Captcha(props) {
 
 	const imgRef = React.createRef();
 	const toaster = utils.glass.toaster;
-	const locate = utils.glass.locate;
+	const locate = utils.glass.localization;
 	const key = `${props.where}.captcha.last`
 
 	const incr = function () {

@@ -46,16 +46,16 @@ func shuffleOne(v []string) string {
 func (s Type) CaptchaGenPNG(ctx *sha.RequestCtx) image.Image {
 	var lastCTime int64
 	var now = time.Now().Unix()
-	if s.Get(ctx, internal.SessionKeys.CaptchaTime, &lastCTime) && now-lastCTime < 60 {
-		//panic(sha.StatusError(sha.StatusTooManyRequests))
+	if s.Get(ctx, internal.SessionKeyCaptchaTime, &lastCTime) && now-lastCTime < 60 {
+		panic(sha.StatusError(sha.StatusTooManyRequests))
 	}
 
 	poem := RandTangPoem()
 	ind := int(rand.Uint32()) % len(poem.Contents)
 	verse := poem.Contents[ind]
 
-	s.Set(ctx, internal.SessionKeys.CaptchaVerse, verse)
-	s.Set(ctx, internal.SessionKeys.CaptchaTime, now)
+	s.Set(ctx, internal.SessionKeyCaptchaText, verse)
+	s.Set(ctx, internal.SessionKeyCaptchaTime, now)
 
 	return captcha.RenderSomeFonts(-1, shuffleOne(poem.nContents[ind]), captchaOptions)
 }
@@ -73,7 +73,7 @@ func (s Type) CaptchaVerify(ctx *sha.RequestCtx) {
 		return
 	}
 
-	defer s.Del(ctx, internal.SessionKeys.CaptchaVerse)
+	defer s.Del(ctx, internal.SessionKeyCaptchaText)
 
 	v, _ := ctx.FormValue("captcha")
 	if len(v) < 1 {
@@ -81,11 +81,11 @@ func (s Type) CaptchaVerify(ctx *sha.RequestCtx) {
 	}
 
 	var txt string
-	if !s.Get(ctx, internal.SessionKeys.CaptchaVerse, &txt) {
+	if !s.Get(ctx, internal.SessionKeyCaptchaText, &txt) {
 		panic(sha.StatusError(sha.StatusBadRequest))
 	}
 	var ctime int64
-	if !s.Get(ctx, internal.SessionKeys.CaptchaTime, &ctime) || time.Now().Unix()-ctime > 300 {
+	if !s.Get(ctx, internal.SessionKeyCaptchaTime, &ctime) || time.Now().Unix()-ctime > 300 {
 		panic(sha.StatusError(sha.StatusBadRequest))
 	}
 

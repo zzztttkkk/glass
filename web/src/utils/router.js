@@ -1,28 +1,19 @@
 import React from "react";
-
 import {Route, Switch} from "react-router-dom";
 
+export class PathSwitch {
+	constructor(prefix, notfound) {
+		this.prefix = prefix;
+		this.parent = null;
+		this.m = {};
+		this.children = [];
 
-function isLazyObject(obj) {
-	return obj.$$typeof && typeof obj.$$typeof === "symbol" && obj.$$typeof.toString() === "Symbol(react.lazy)"
-}
-
-
-export class PathSwitch extends React.Component {
-    constructor(prefix, notfound) {
-        super();
-        this.prefix = prefix;
-        this.parent = null;
-        this.m = {};
-        this.children = [];
-
-        this.notfound = notfound;
-    }
+		this.notfound = notfound;
+	}
 
 	register(path, val) {
-		if (isLazyObject(val)) {
-			// todo support lazy
-			throw new Error("todo lazy");
+		if (typeof val !== "function" && val instanceof React.Component) {
+			throw new Error(`${val} is not a React Component`);
 		}
 
 		if (typeof this.m[path] != "undefined") {
@@ -32,8 +23,12 @@ export class PathSwitch extends React.Component {
 	}
 
 	include(ps) {
-		ps.parent = this;
-		this.children.push(ps);
+		if (ps instanceof PathSwitch) {
+			ps.parent = this;
+			this.children.push(ps);
+		} else {
+			throw new Error(`${ps} is not a PathSwitch`);
+		}
 	}
 
 	full() {
@@ -56,7 +51,10 @@ export class PathSwitch extends React.Component {
 			{
 				Object.entries(this.m).map(
 					([k, v], index) => {
-						return <Route exact={this.notfound != null} key={l + index} path={this.full() + k}>{v}</Route>
+						let Comp = v;
+						return <Route exact={this.notfound != null} key={l + index} path={this.full() + k}>
+							<Comp/>
+						</Route>
 					}
 				)
 			}

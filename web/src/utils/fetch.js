@@ -72,6 +72,14 @@ export class Fetch {
 	}
 
 	static async GET(path, query, headers) {
+		if (query instanceof Element) {
+			query = new FormData(query);
+		}
+
+		if (query instanceof FormData) {
+			query = Array.from(query.entries()).reduce((prev, [k, v]) => (prev[k] = v || true) && prev, {})
+		}
+		console.log(query);
 		return await Fetch.request("get", path, query, headers);
 	}
 

@@ -2,13 +2,9 @@ import utils from "../utils";
 import {RegisterPage} from "./register";
 import {LoginPage} from "./login"
 import {ProfilePage} from "./profile"
+import {ErrNotFoundPage} from "../error";
 
-export const Account = new utils.PathSwitch(
-    "/account",
-    function () {
-        return <h1>account not found</h1>
-    }
-);
+export const Account = new utils.PathSwitch("/account", ErrNotFoundPage);
 
 Account.register("/register", RegisterPage);
 

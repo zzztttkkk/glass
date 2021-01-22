@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/zzztttkkk/sha"
 	"github.com/zzztttkkk/sha/utils"
 	_ "glass/cmd/main/internal"
 	"glass/config"
@@ -8,26 +9,10 @@ import (
 	"glass/restapi"
 	"glass/service/session"
 	"strings"
-
-	"github.com/zzztttkkk/sha"
 )
 
-func run(conf *config.Type) {
-	var co func([]byte) *sha.CorsOptions
-	if conf.Env == config.EnvDevelopment {
-		co = func(origin []byte) *sha.CorsOptions {
-			local := map[string]bool{
-				"http://localhost:8089": true,
-				"http://127.0.0.1:8089": true,
-			}
-			if local[string(origin)] {
-				return (&sha.CorsOptions{AllowCredentials: true}).Init()
-			}
-			return nil
-		}
-	}
-
-	mux := sha.NewMux(conf.HTTP.PathPrefix, co)
+func http(conf *config.Type) {
+	mux := sha.NewMux(conf.HTTP.PathPrefix, conf.GetCORSChecker())
 
 	mux.AddBranch("/api", restapi.Root)
 	mux.HandleDoc("get", "/api/doc")
@@ -62,6 +47,10 @@ func run(conf *config.Type) {
 	}
 	mux.Print()
 	server.ListenAndServe()
+}
+
+func run(conf *config.Type) {
+	http(conf)
 }
 
 func main() {

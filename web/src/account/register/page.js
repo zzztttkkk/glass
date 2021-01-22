@@ -25,7 +25,7 @@ function FormGroup(props) {
 			<Input
 				clearable clearOnEscape required
 				overrides={{StartEnhancer: {style: {width: "4em"}}}}
-				startEnhancer={utils.glass.locate.glass.account.username}
+				startEnhancer={utils.glass.localization.glass.account.username}
 				type={"text"}
 				value={username}
 				error={usernameInErr}
@@ -45,24 +45,24 @@ function FormGroup(props) {
 		<FormControl>
 			<Input clearable
 				   overrides={{StartEnhancer: {style: {width: "4em"}}}}
-				   startEnhancer={utils.glass.locate.glass.account.password}
+				   startEnhancer={utils.glass.localization.glass.account.password}
 				   type={"password"}/>
 		</FormControl>
 		<FormControl>
 			<Input clearable
 				   overrides={{StartEnhancer: {style: {width: "4em"}}}}
-				   startEnhancer={utils.glass.locate.glass.account.rePassword}
+				   startEnhancer={utils.glass.localization.glass.account.rePassword}
 				   type={"password"}/>
 		</FormControl>
 		<div>
 			<BtnLink href={"/account/register"} BTN={{BaseButton: {style: {marginRight: "16px"}}}}>
-				{utils.glass.locate.glass.account.register}
+				{utils.glass.localization.glass.account.register}
 			</BtnLink>
 			<BtnLink href={"/account/repwd"}>
-				{utils.glass.locate.glass.account.fgpwd}
+				{utils.glass.localization.glass.account.fgpwd}
 			</BtnLink>
 			<Button
-				overrides={{BaseButton: {style: {float: "right"}}}}>{utils.glass.locate.glass.common.submit}</Button>
+				overrides={{BaseButton: {style: {float: "right"}}}}>{utils.glass.localization.glass.common.submit}</Button>
 		</div>
 	</div>
 }

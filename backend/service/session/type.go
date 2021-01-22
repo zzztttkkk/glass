@@ -62,7 +62,7 @@ func response(sid []byte, ctx *sha.RequestCtx, byCookie bool) {
 type Type string
 
 func New(ctx *sha.RequestCtx) Type {
-	v := ctx.Get(internal.UserDataKeys.Session)
+	v := ctx.Get(internal.UserDataKeySession)
 	if v != nil {
 		return v.(Type)
 	}
@@ -101,7 +101,7 @@ func New(ctx *sha.RequestCtx) Type {
 			panic(err)
 		}
 	}
-	ctx.Set(internal.UserDataKeys.Session, Type(key))
+	ctx.Set(internal.UserDataKeySession, Type(key))
 	response(sid, ctx, byCookie)
 	return Type(key)
 }
