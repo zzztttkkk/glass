@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/zzztttkkk/sha"
 	"github.com/zzztttkkk/sha/utils"
@@ -17,7 +18,6 @@ type Type struct {
 	Secret string `json:"secret" toml:"secret"`
 
 	Static struct {
-		DistPath     string `json:"dist_path" toml:"dist-path"`
 		WebBuildPath string `json:"web_build_path" toml:"web-build-path"`
 	} `json:"static" toml:"static"`
 
@@ -51,11 +51,17 @@ type Type struct {
 		// router
 		PathPrefix string `json:"path_prefix" toml:"path-prefix"`
 
-		// CORS
 		CORS []struct {
 			Origin string `json:"origin" toml:"origin"`
 			sha.CorsConfig
 		} `json:"cors" toml:"cors"`
+
+		CSRF struct {
+			CookieName  string `json:"cookie_name" toml:"cookie-name"`
+			HeaderName  string `json:"header_name" toml:"header-name"`
+			StorageName string `json:"storage_name" toml:"storage-name"`
+			MaxAge      int    `json:"max_age" toml:"max-age"`
+		} `json:"csrf" toml:"csrf"`
 	} `json:"http" toml:"http"`
 
 	Session struct {
@@ -63,13 +69,6 @@ type Type struct {
 		HeaderName       string `json:"header_name" toml:"header-name"`
 		MaxAge           int    `json:"max_age" toml:"max-age"`
 		StorageKeyPrefix string `json:"storage_key_prefix" toml:"storage-key-prefix"`
-
-		CRSF struct {
-			CookieName  string `json:"cookie_name" toml:"cookie-name"`
-			HeaderName  string `json:"header_name" toml:"header-name"`
-			StorageName string `json:"storage_name" toml:"storage-name"`
-			MaxAge      int    `json:"max_age" toml:"max-age"`
-		} `json:"crsf" toml:"crsf"`
 
 		CaptchaFonts []string `json:"captcha_fonts" toml:"captcha-fonts"`
 		CaptchaSkip  bool     `json:"captcha_skip" toml:"captcha-skip"`
@@ -105,7 +104,10 @@ func (t *Type) GetCORSChecker() sha.CORSOriginChecker {
 		for _, v := range t.HTTP.CORS {
 			m[v.Origin] = sha.NewCorsOptions(&v.CorsConfig)
 		}
-		co = func(origin []byte) *sha.CorsOptions { return m[utils.S(origin)] }
+		co = func(origin []byte) *sha.CorsOptions {
+			fmt.Println(string(origin))
+			return m[utils.S(origin)]
+		}
 	}
 	return co
 }
@@ -114,12 +116,14 @@ func _Default() Type {
 	v := Type{
 		Secret: "$ENV{GLASS_SECRET}",
 	}
+	v.Auth.CookieName = "_gak"
+	v.Auth.HeaderName = "x-Glass-Auth"
 	v.Session.StorageKeyPrefix = "session:"
 	v.Session.MaxAge = 1800
-	v.Session.HeaderName = "GlassSession"
+	v.Session.HeaderName = "X-Glass-Session"
 	v.Session.CookieName = "_gsi"
-	v.Session.CRSF.CookieName = "_gcrsfp"
-	v.Session.CRSF.HeaderName = "GlassCRSF"
-	v.Session.CRSF.MaxAge = 900
+	v.HTTP.CSRF.CookieName = "_gcsrf"
+	v.HTTP.CSRF.HeaderName = "X-Glass-CSRF"
+	v.HTTP.CSRF.MaxAge = 900
 	return v
 }

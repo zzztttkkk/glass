@@ -3,10 +3,9 @@ package session
 import (
 	"encoding/json"
 	"glass/config"
+	"glass/dist"
 	"glass/internal"
-	"io/ioutil"
 	"math/rand"
-	"os"
 	"strings"
 )
 
@@ -18,21 +17,11 @@ type TangPoem struct {
 }
 
 var allTangPoetry []TangPoem
-var tangPoetryJsonData []byte
 
-// todo embed when 1.16
 func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
-			f, e := os.Open(cfg.Static.DistPath + "/300_tang_poems.json")
-			if e != nil {
-				panic(e)
-			}
-			tangPoetryJsonData, e = ioutil.ReadAll(f)
-			if e != nil {
-				panic(e)
-			}
-			e = json.Unmarshal(tangPoetryJsonData, &allTangPoetry)
+			e := json.Unmarshal(dist.TangPoems, &allTangPoetry)
 			if e != nil {
 				panic(e)
 			}

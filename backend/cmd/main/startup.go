@@ -30,8 +30,9 @@ func startup(cfg *config.Type) {
 				if info.IsDir() {
 					continue
 				}
-				if strings.HasSuffix(info.Name(), ".json") || strings.HasSuffix(info.Name(), ".toml") {
-					files = append(files, info.Name())
+				if strings.HasPrefix(info.Name(), "glass.") &&
+					(strings.HasSuffix(info.Name(), ".json") || strings.HasSuffix(info.Name(), ".toml")) {
+					files = append(files, *cp+"/"+info.Name())
 				}
 			}
 			config.FromFiles(cfg, files...)
@@ -39,7 +40,7 @@ func startup(cfg *config.Type) {
 			config.FromFiles(cfg, *cp)
 		}
 	} else {
-		log.Fatalln("glass: empty config")
+		log.Fatalln("glass.startup: empty config")
 	}
 
 	sqlx.OpenWriteableDB(cfg.Database.DriverName, cfg.Database.WriteableURI)

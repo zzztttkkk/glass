@@ -20,8 +20,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "set PORT=8089 && react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts start",
+    "build": "node build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

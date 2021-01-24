@@ -5,6 +5,7 @@ go.sum
 *.exe
 **/node_modules
 **/build
+**/webbuild
 
 # misc
 **/.DS_Store
@@ -33,3 +34,5 @@ go.sum
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+/web/pnpm-lock.yaml

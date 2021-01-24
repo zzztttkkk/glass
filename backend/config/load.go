@@ -55,9 +55,6 @@ func doReplace(fp, name string, value *reflect.Value, path []string) {
 		func(data []byte) []byte {
 			envK := strings.TrimSpace(string(data[5 : len(data)-1]))
 			v := os.Getenv(envK)
-			if len(v) < 1 {
-				panic(fmt.Errorf("glass.config: empty env value; key: `%s`, val: `%s`", key, envK))
-			}
 			return []byte(v)
 		},
 	)
@@ -135,6 +132,7 @@ func FromFiles(dist interface{}, fps ...string) {
 				panic(err)
 			}
 		}
+		log.Printf("glass.conf: load from file `%s`\n", fp)
 	}
 
 	defV := _Default()
