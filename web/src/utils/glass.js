@@ -1,3 +1,4 @@
+import React from "react";
 import {toaster} from "baseui/toast";
 import {glass as lg} from "../languages/glass";
 import {Fetch} from "./fetch";
@@ -8,6 +9,14 @@ export const glass = {
     setTheme: null,
     localization: {glass: lg},
     setLocalization: null,
+
+    __userCtx: null,
+    setUser: function (u) {
+    },
+    useUser: function () {
+        return React.useContext(this.__userCtx)
+    },
+
     css: (v) => {
         return ""
     },

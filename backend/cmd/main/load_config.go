@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/zzztttkkk/sha/utils"
 	"glass/config"
 	"io/ioutil"
 	"log"
@@ -11,9 +12,18 @@ import (
 	"github.com/zzztttkkk/sha/sqlx"
 )
 
-func startup(cfg *config.Type) {
-	cp := flag.String("c", "", "config file path")
+var cp = flag.String("c", "", "config file path")
+var sp = flag.String("s", "all", "services to run, such as `http, all`")
+
+func init() {
 	flag.Parse()
+}
+
+func isConfFile(fn string) bool {
+	return strings.HasPrefix(fn, "glass.") && (strings.HasSuffix(fn, ".json") || strings.HasSuffix(fn, ".toml"))
+}
+
+func loadConfig(cfg *config.Type) {
 	if len(*cp) > 0 {
 		stat, err := os.Stat(*cp)
 		if err != nil {
@@ -30,17 +40,19 @@ func startup(cfg *config.Type) {
 				if info.IsDir() {
 					continue
 				}
-				if strings.HasPrefix(info.Name(), "glass.") &&
-					(strings.HasSuffix(info.Name(), ".json") || strings.HasSuffix(info.Name(), ".toml")) {
+				if isConfFile(info.Name()) {
 					files = append(files, *cp+"/"+info.Name())
 				}
 			}
-			config.FromFiles(cfg, files...)
+			utils.Conf.LoadFromFiles(cfg, files...)
 		} else {
-			config.FromFiles(cfg, *cp)
+			if !isConfFile(*cp) {
+				log.Fatalf("glass.loadConfig: `%s` is not a `json` or `toml` file\n", *cp)
+			}
+			utils.Conf.LoadFromFiles(cfg, *cp)
 		}
 	} else {
-		log.Fatalln("glass.startup: empty config")
+		log.Fatalln("glass.loadConfig: empty config")
 	}
 
 	sqlx.OpenWriteableDB(cfg.Database.DriverName, cfg.Database.WriteableURI)

@@ -3,6 +3,7 @@ package restapi
 import (
 	"github.com/zzztttkkk/sha"
 	"glass/restapi/account"
+	"glass/service"
 	"glass/service/session"
 	"image/png"
 )
@@ -30,4 +31,11 @@ func init() {
 		}),
 	)
 
+	Root.HTTP(
+		"get", "/built-time.txt",
+		sha.RequestHandlerFunc(func(ctx *sha.RequestCtx) {
+			ctx.Response.Header.SetContentType(sha.MIMEText)
+			_, _ = ctx.WriteString(service.BuiltTime(nil))
+		}),
+	)
 }

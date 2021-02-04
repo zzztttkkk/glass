@@ -47,14 +47,20 @@ function makeResponsiveTheme(theme) {
     return {...theme, ...ResponsiveTheme};
 }
 
+const UserContext = React.createContext(null);
+
 function GlassSetup(props) {
+    let [user, setUser] = React.useState(null);
+    utils.glass.__userCtx = UserContext;
+    utils.glass.setUser = setUser;
+
     const [css, theme] = useStyletron();
     utils.glass.css = css;
     utils.glass.theme = theme;
-    return <>
+    return <UserContext.Provider value={user}>
         <ToasterContainer/>
         {props.children}
-    </>
+    </UserContext.Provider>
 }
 
 function Inner() {

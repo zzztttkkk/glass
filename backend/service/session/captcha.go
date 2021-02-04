@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	"github.com/zzztttkkk/sha"
 	"github.com/zzztttkkk/sha/captcha"
 	"github.com/zzztttkkk/sha/utils"
@@ -18,6 +19,10 @@ var skip bool
 func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
+			if len(cfg.Session.CaptchaFonts) < 1 {
+				panic(errors.New("glass.service.session: empty captcha font list"))
+			}
+
 			captcha.Init(cfg.Session.CaptchaFonts...)
 			skip = cfg.Session.CaptchaSkip
 		},

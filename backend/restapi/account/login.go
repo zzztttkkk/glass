@@ -19,7 +19,7 @@ func init() {
 		func(cfg *config.Type) {
 			authCookieName = cfg.Auth.CookieName
 			authHeaderName = cfg.Auth.HeaderName
-			authMaxAge = int64(cfg.Auth.TokenMaxAge)
+			authMaxAge = int64(cfg.Auth.TokenMaxAge.Duration / time.Second)
 		},
 	)
 }

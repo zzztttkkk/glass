@@ -1,5 +1,7 @@
 package events
 
-import "glass/events/account"
+import (
+	"glass/events/account"
+)
 
 var Account = account.Namespace

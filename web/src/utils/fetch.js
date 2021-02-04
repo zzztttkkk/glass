@@ -79,7 +79,6 @@ export class Fetch {
 		if (query instanceof FormData) {
 			query = Array.from(query.entries()).reduce((prev, [k, v]) => (prev[k] = v || true) && prev, {})
 		}
-		console.log(query);
 		return await Fetch.request("get", path, query, headers);
 	}
 

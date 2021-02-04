@@ -42,17 +42,19 @@ func (Namespace) Auth(ctx context.Context, name, pwd []byte) (uid int64) {
 	return -1
 }
 
-func (Namespace) GetByID(ctx context.Context, uid int64) *model.User {
-	var user model.User
+func (Namespace) GetByID(ctx context.Context, uid int64, dist *model.User) bool {
 	type Arg struct {
 		UID int64 `db:"uid"`
 	}
 	if err := op.FetchOne(
 		ctx, "*",
 		"where id=:uid and deleted_at=0 and status>=0", Arg{UID: uid},
-		&user,
+		dist,
 	); err != nil {
-		return nil
+		if err == sql.ErrNoRows {
+			return false
+		}
+		panic(err)
 	}
-	return &user
+	return true
 }

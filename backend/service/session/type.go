@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/go-redis/redis/v8"
 	"github.com/rs/xid"
 	"github.com/zzztttkkk/sha"
@@ -36,8 +37,8 @@ func init() {
 			cookieName = cfg.Session.CookieName
 			headerName = cfg.Session.HeaderName
 			headerExpireName = headerName + "-Expire"
-			maxAgeSeconds = int64(cfg.Session.MaxAge)
-			maxAge = time.Second * time.Duration(cfg.Session.MaxAge)
+			maxAgeSeconds = int64(cfg.Session.MaxAge.Duration / time.Second)
+			maxAge = cfg.Session.MaxAge.Duration
 			qOfMaxAge = maxAgeSeconds * 3 / 4
 			maxAgeSecondsStr = utils.B(strconv.FormatInt(maxAgeSeconds, 10))
 			prefix = cfg.Session.StorageKeyPrefix
@@ -45,6 +46,14 @@ func init() {
 			resetScriptHash, err = cli.ScriptLoad(context.Background(), resetScript).Result()
 			if err != nil {
 				panic(err)
+			}
+
+			if cookieName == headerName && len(cookieName) == 0 {
+				panic(errors.New("glass.service.session: empty session token name"))
+			}
+
+			if maxAge < 1 {
+				panic(errors.New("glass.service.session: zero session token max-age"))
 			}
 		},
 	)
@@ -94,6 +103,7 @@ func New(ctx *sha.RequestCtx) Type {
 		}
 	}
 
+	// create session
 	sid = utils.B(xid.New().String())
 	key = prefix + utils.S(sid)
 	if err := cli.EvalSha(ctx, resetScriptHash, nil, key, time.Now().Unix(), maxAgeSeconds).Err(); err != nil {

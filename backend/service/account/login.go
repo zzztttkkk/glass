@@ -3,11 +3,13 @@ package account
 import (
 	"context"
 	"crypto/sha256"
+	"errors"
 	"github.com/zzztttkkk/sha"
 	"github.com/zzztttkkk/sha/auth"
 	"github.com/zzztttkkk/sha/utils"
 	"glass/config"
 	"glass/dao"
+	"glass/dao/model"
 	"glass/internal"
 	"time"
 )
@@ -22,10 +24,19 @@ func init() {
 	internal.DigContainer.Append(
 		func(cfg *config.Type) {
 			secret = []byte(cfg.Secret)
-			authMaxAge = int64(cfg.Auth.TokenMaxAge)
+			authMaxAge = int64(cfg.Auth.TokenMaxAge.Duration/time.Second)
 			authCookieName = cfg.Auth.CookieName
 			authHeaderName = cfg.Auth.HeaderName
+
 			AuthTokenGenerator = utils.NewIDTokenGenerator(utils.NewHashPoll(sha256.New, secret))
+
+			if authMaxAge < 1 {
+				panic(errors.New("glass.service.account: zero auth token max-age"))
+			}
+
+			if authHeaderName == authCookieName && len(authCookieName) == 0 {
+				panic(errors.New("glass.service.account: empty auth token name"))
+			}
 		},
 	)
 }
@@ -73,12 +84,11 @@ func (Namespace) Auth(ctx context.Context) (auth.Subject, error) {
 			rctx.Response.Header.Set(authHeaderName, utils.B(token))
 		}
 	}
-	user := dao.User.GetByID(ctx, uid)
-	if user == nil {
+	var user model.User
+	if !dao.User.GetByID(ctx, uid, &user) {
 		return nil, sha.StatusError(sha.StatusUnauthorized)
 	}
-
 	rctx.Set(internal.UserDataLastLogin, ll)
 	rctx.Set(internal.UserDataKeySubject, user)
-	return user, nil
+	return &user, nil
 }

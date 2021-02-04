@@ -9,9 +9,9 @@ import (
 
 var ErrRedisUnknownMode = errors.New("sha.config: unknown redis mode,[singleton,ring,cluster]")
 
-func (t *Type) initRedisClient() {
+func initRedisClient(t *RedisConfig) redis.Cmdable {
 	opts := make([]*redis.Options, 0)
-	for _, url := range t.Redis.Nodes {
+	for _, url := range t.Nodes {
 		option, err := redis.ParseURL(url)
 		if err != nil {
 			panic(err)
@@ -20,13 +20,12 @@ func (t *Type) initRedisClient() {
 	}
 
 	if len(opts) < 1 {
-		return
+		return nil
 	}
 
-	switch strings.ToLower(t.Redis.Mode) {
+	switch strings.ToLower(t.Mode) {
 	case "singleton":
-		t.internal.redisCli = redis.NewClient(opts[0])
-		return
+		return redis.NewClient(opts[0])
 	case "ring":
 		addrs := map[string]string{}
 		var pwd string
@@ -42,8 +41,7 @@ func (t *Type) initRedisClient() {
 			}
 		}
 
-		t.internal.redisCli = redis.NewRing(&redis.RingOptions{Addrs: addrs, Password: pwd, Username: name})
-		return
+		return redis.NewRing(&redis.RingOptions{Addrs: addrs, Password: pwd, Username: name})
 	case "cluster":
 		var addrs []string
 		var pwd string
@@ -57,14 +55,13 @@ func (t *Type) initRedisClient() {
 				name = opt.Username
 			}
 		}
-		t.internal.redisCli = redis.NewClusterClient(
+		return redis.NewClusterClient(
 			&redis.ClusterOptions{
 				Addrs:    addrs,
 				Username: name,
 				Password: pwd,
 			},
 		)
-		return
 	default:
 		panic(ErrRedisUnknownMode)
 	}
